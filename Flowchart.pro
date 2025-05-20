@@ -9,6 +9,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    connection.cpp \
     diagram.cpp \
     drawarea.cpp \
     main.cpp \
@@ -23,6 +24,7 @@ SOURCES += \
     windowmain.cpp
 
 HEADERS += \
+    connection.h \
     shapes/abstractshape.h \
     diagram.h \
     drawarea.h \

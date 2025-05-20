@@ -26,15 +26,8 @@ protected:
     void dropEvent(QDropEvent* pDE) override;
 
 private:
-    /**
-     * @brief findShape Finds the index of the shape, which contains the point pt
-     * @param pt Point to look for
-     * @return Index of the shape, which contains the point pt. If no such shape can be
-     * found, -1 is returned
-     */
-    int findShape(QPointF pt) const;
-
-private:
     Diagram m_diagram;
     std::optional<QPointF> m_drag;
+    std::optional<QPointF> m_connectionEnd;
+    Connection m_conStart;
 };

@@ -7,7 +7,7 @@
 #include <QMimeData>
 #include <QMessageBox>
 
-DrawArea::DrawArea(QWidget* parent) : QWidget(parent)
+DrawArea::DrawArea(QWidget* parent) : QWidget(parent), m_conStart(nullptr, -1, nullptr)
 {
     resize(800, 600);
     setAcceptDrops(true);
@@ -17,26 +17,53 @@ DrawArea::DrawArea(QWidget* parent) : QWidget(parent)
 void DrawArea::mousePressEvent(QMouseEvent* pME)
 {
     if (pME->button() == Qt::LeftButton) {
-        auto i = findShape(pME->position());
+        auto i = m_diagram.findShape(pME->position());
         m_drag = pME->position();
         m_diagram.select(i);
+        m_conStart = m_diagram.findConnector(m_drag.value());
+        if (m_conStart.isEnd() == true)
+            m_conStart.appendPoint(m_drag.value());
         update();
     }
 }
 
 void DrawArea::mouseMoveEvent(QMouseEvent* pME)
 {
+    auto pt = pME->position();
+
     if (m_drag.has_value() == true) {
-        auto pt = pME->position();
-        m_diagram.moveSelected(pt - m_drag.value());
-        update();
+
+        if (m_connectionEnd.has_value() == true) {
+
+        } else {
+            m_diagram.moveSelected(pt - m_drag.value());
+            update();
+        }
+
         m_drag = pt;
+        return;
     }
+
+    auto con = m_diagram.findConnector(pt);
+    if (con.isEnd() == true)
+        setCursor(Qt::CursorShape::PointingHandCursor);
+    else
+        setCursor(Qt::CursorShape::ArrowCursor);
 }
 
 void DrawArea::mouseReleaseEvent(QMouseEvent* pME)
 {
+    auto pt = pME->position();
+    auto con = m_diagram.findConnector(pt);
+    if ((m_conStart.isEnd() == true) && (con.isEnd() == true)) {
+        m_conStart.appendPoint(pt);
+        m_diagram.addConnection(m_conStart);
+        update();
+    }
+
     m_drag.reset();
+    m_connectionEnd.reset();
+    m_conStart = Connection(nullptr, -1, nullptr);
 }
 
 void DrawArea::paintEvent(QPaintEvent* pPE)
@@ -57,9 +84,17 @@ void DrawArea::paintEvent(QPaintEvent* pPE)
         for (int iX = 0; iX < iW; iX += 10)
             P.drawEllipse(QPoint(iX, iY), 1, 1);
 
-    const auto& v = m_diagram.shapes();
+    const auto& vCons = m_diagram.connections();
 
-    for (const auto& shape : v) {
+    P.setPen(Qt::black);
+    for (const auto& con : vCons) {
+        auto pts = con.points();
+        P.drawPolyline(pts);
+    }
+
+    const auto& vShapes = m_diagram.shapes();
+
+    for (const auto& shape : vShapes) {
         shape->draw(P);
     }
 }
@@ -98,12 +133,3 @@ void DrawArea::dropEvent(QDropEvent* pDE)
     }
 }
 
-int DrawArea::findShape(QPointF pt) const
-{
-    const auto& v = m_diagram.shapes();
-    for (size_t i = 0; i < v.size(); ++i)
-        if (v[i]->contains(pt) == true)
-            return i;
-
-    return -1;
-}

@@ -114,6 +114,20 @@ public:
      * @return true, if the shape contains pt and false otherwise
      */
     bool contains(QPointF pt, double f = 1.0) const;
+    /**
+     * @brief isOnInput Returns true, if the point is on input connector
+     * @param pt Point to check
+     * @param f scale factor
+     * @return true, if the point is on input connector and false otherwise
+     */
+    bool isOnInput(QPointF pt, double f = 1.0) const;
+    /**
+     * @brief findOutput Returns the index of output connector on which the point is located.
+     * @param pt Point to check
+     * @param f scale factor
+     * @return index of output connector on which the point is located. If no such output connector can be found, -1 is returned
+     */
+    int findOutput(QPointF pt, double f = 1.0) const;
 
 protected:
     /**
@@ -154,6 +168,13 @@ protected:
      * @param f Resize scale
      */
     virtual void drawSelection(QPainter& P, double f = 1.0);
+    /**
+     * @brief area Returns the rectnagle with center at pt and given size
+     * @param pt Central point
+     * @param size Rectangle size
+     * @return Calculated rectangle
+     */
+    QRectF area(QPointF pt, int size) const;
 
 protected:
     bool m_selected = false;

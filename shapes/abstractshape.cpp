@@ -7,7 +7,13 @@ void AbstractShape::moveCenter(QPointF pt)
 
 bool AbstractShape::contains(QPointF pt, double f) const
 {
-    return scale(f).contains(pt);
+    if (scale(f).contains(pt) == true)
+        return true;
+
+    if (isOnInput(pt, f) == true)
+        return true;
+
+    return (findOutput(pt, f) >= 0);
 }
 
 bool AbstractShape::isOnInput(QPointF pt, double f) const
@@ -17,7 +23,7 @@ bool AbstractShape::isOnInput(QPointF pt, double f) const
 
     auto shapeRect = scale(f);
     auto center = global(shapeRect, m_connectIn.value().x(), m_connectIn.value().y());
-    auto rect = area(center, m_cConnectorSize);
+    auto rect = area(center, m_cConnectorSize, Qt::AlignLeft |  Qt::AlignTop);
     return rect.contains(pt);
 }
 
@@ -26,12 +32,25 @@ int AbstractShape::findOutput(QPointF pt, double f) const
     auto shapeRect = scale(f);
     for (size_t i = 0; i < m_vConnectsOut.size(); ++i) {
         auto center = global(shapeRect, m_vConnectsOut[i].x(), m_vConnectsOut[i].y());
-        auto rect = area(center, m_cConnectorSize);
+        auto rect = area(center, m_cConnectorSize, Qt::AlignCenter);
         if (rect.contains(pt) == true)
             return i;
     }
 
     return -1;
+}
+
+QPointF AbstractShape::inputPos(double f) const
+{
+    if (m_connectIn.has_value() == false)
+        return {};
+
+    return global(scale(f), m_connectIn.value().x(), m_connectIn.value().y());
+}
+
+QPointF AbstractShape::outputPos(int i, double f) const
+{
+    return global(scale(f), m_vConnectsOut[i].x(), m_vConnectsOut[i].y());
 }
 
 QRectF AbstractShape::scale(double f) const
@@ -117,7 +136,7 @@ void AbstractShape::drawSelection(QPainter& P, double f)
     P.restore();
 }
 
-QRectF AbstractShape::area(QPointF pt, int size) const
+QRectF AbstractShape::area(QPointF pt, int size, Qt::Alignment align) const
 {
     return QRectF(pt.x() - size / 2, pt.y() - size / 2, size, size);
 }

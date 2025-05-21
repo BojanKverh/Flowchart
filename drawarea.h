@@ -21,6 +21,7 @@ protected:
     void mousePressEvent(QMouseEvent* pME) override;
     void mouseMoveEvent(QMouseEvent* pME) override;
     void mouseReleaseEvent(QMouseEvent* pME) override;
+    void keyPressEvent(QKeyEvent* pKE) override;
     void paintEvent(QPaintEvent* pPE) override;
     void dragEnterEvent(QDragEnterEvent* pDEE) override;
     void dropEvent(QDropEvent* pDE) override;
@@ -28,6 +29,5 @@ protected:
 private:
     Diagram m_diagram;
     std::optional<QPointF> m_drag;
-    std::optional<QPointF> m_connectionEnd;
     Connection m_conStart;
 };

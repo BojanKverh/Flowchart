@@ -12,17 +12,23 @@ DrawArea::DrawArea(QWidget* parent) : QWidget(parent), m_conStart(nullptr, -1, n
     resize(800, 600);
     setAcceptDrops(true);
     setMouseTracking(true);
+    setFocusPolicy(Qt::StrongFocus);
 }
 
 void DrawArea::mousePressEvent(QMouseEvent* pME)
 {
     if (pME->button() == Qt::LeftButton) {
-        auto i = m_diagram.findShape(pME->position());
-        m_drag = pME->position();
-        m_diagram.select(i);
+        auto pt = pME->position();
+        auto i = m_diagram.findShape(pt);
+        m_drag = pt;
+        m_diagram.selectShape(i);
         m_conStart = m_diagram.findConnector(m_drag.value());
-        if (m_conStart.isEnd() == true)
-            m_conStart.appendPoint(m_drag.value());
+        if (i >= 0) {
+            m_diagram.selectConnection(-1);
+        } else {
+            i = m_diagram.findConnection(pt);
+            m_diagram.selectConnection(i);
+        }
         update();
     }
 }
@@ -33,12 +39,12 @@ void DrawArea::mouseMoveEvent(QMouseEvent* pME)
 
     if (m_drag.has_value() == true) {
 
-        if (m_connectionEnd.has_value() == true) {
+        if (m_conStart.isEnd() == true) {
 
         } else {
             m_diagram.moveSelected(pt - m_drag.value());
-            update();
         }
+        update();
 
         m_drag = pt;
         return;
@@ -56,14 +62,25 @@ void DrawArea::mouseReleaseEvent(QMouseEvent* pME)
     auto pt = pME->position();
     auto con = m_diagram.findConnector(pt);
     if ((m_conStart.isEnd() == true) && (con.isEnd() == true)) {
-        m_conStart.appendPoint(pt);
+        m_conStart.addEnd(con.isOutput() == true? con.out() : con.in(), con.outIndex());
+        m_conStart.update();
+        m_conStart.setSelected(true);
+        m_diagram.selectShape(-1);
+        m_diagram.selectConnection(-1);
         m_diagram.addConnection(m_conStart);
         update();
     }
 
     m_drag.reset();
-    m_connectionEnd.reset();
     m_conStart = Connection(nullptr, -1, nullptr);
+}
+
+void DrawArea::keyPressEvent(QKeyEvent* pKE)
+{
+    if ((pKE->key() == Qt::Key_Delete) || (pKE->key() == Qt::Key_Backspace)) {
+        m_diagram.deleteSelected();
+        update();
+    }
 }
 
 void DrawArea::paintEvent(QPaintEvent* pPE)
@@ -88,8 +105,7 @@ void DrawArea::paintEvent(QPaintEvent* pPE)
 
     P.setPen(Qt::black);
     for (const auto& con : vCons) {
-        auto pts = con.points();
-        P.drawPolyline(pts);
+        con.draw(P);
     }
 
     const auto& vShapes = m_diagram.shapes();
@@ -126,9 +142,11 @@ void DrawArea::dropEvent(QDropEvent* pDE)
               break;
         }
 
-        if (errMsg.isEmpty() == true)
+        if (errMsg.isEmpty() == true) {
             update();
-        else
+            m_diagram.selectConnection(-1);
+            m_diagram.selectShape(m_diagram.shapes().size() - 1);
+        } else
             QMessageBox::critical(this, tr("Shape adding failed"), errMsg);
     }
 }

@@ -1,6 +1,7 @@
 #include "diagram.h"
 
 #include <algorithm>
+#include <unordered_set>
 
 Diagram::Diagram() {}
 
@@ -21,10 +22,16 @@ Diagram::Error Diagram::addConnection(const Connection& con)
     return Error::eNone;
 }
 
-void Diagram::select(int n)
+void Diagram::selectShape(int n)
 {
     for (size_t i = 0; i < m_vShapes.size(); ++i)
         m_vShapes[i]->setSelected(static_cast<int>(i) == n);
+}
+
+void Diagram::selectConnection(int n)
+{
+    for (size_t i = 0; i < m_vConnections.size(); ++i)
+        m_vConnections[i].setSelected(static_cast<int>(i) == n);
 }
 
 int Diagram::findShape(QPointF pt) const
@@ -35,12 +42,55 @@ int Diagram::findShape(QPointF pt) const
     return (it == m_vShapes.end()? -1 : std::distance(m_vShapes.begin(), it));
 }
 
+int Diagram::findConnection(QPointF pt) const
+{
+    auto it = std::find_if(m_vConnections.begin(), m_vConnections.end(), [pt](const auto& con) {
+        return con.contains(pt);
+    });
+
+    return (it == m_vConnections.end()? -1 : std::distance(m_vConnections.begin(), it));
+}
+
 void Diagram::moveSelected(QPointF pt)
 {
+    std::unordered_set<size_t> set;
     for (auto& shape : m_vShapes) {
-        if (shape->isSelected() == true)
+        if (shape->isSelected() == true) {
             shape->move(shape->position() + pt);
+            for (size_t i = 0; i < m_vConnections.size(); ++i)
+                if (m_vConnections[i].contains(shape.get()))
+                    set.insert(i);
+        }
     }
+
+    for (auto it = set.begin(); it != set.end(); ++it) {
+        m_vConnections[*it].update();
+    }
+}
+
+void Diagram::deleteSelected()
+{
+    std::unordered_set<AbstractShape*> set;
+    auto itRemoveShapes = std::remove_if(m_vShapes.begin(), m_vShapes.end(), [&](const std::unique_ptr<AbstractShape>& it) {
+        if (it->isSelected() == true) {
+            set.insert(it.get());
+            return true;
+        }
+        return false;
+    });
+
+    auto itRemoveConnections = std::remove_if(m_vConnections.begin(), m_vConnections.end(), [&](const Connection& con) {
+        return (set.find(con.out()) != set.end()) || (set.find(con.in()) != set.end());
+    });
+
+    m_vConnections.erase(itRemoveConnections, m_vConnections.end());
+    m_vShapes.erase(itRemoveShapes, m_vShapes.end());
+
+    itRemoveConnections = std::remove_if(m_vConnections.begin(), m_vConnections.end(), [&](const Connection& con) {
+        return con.isSelected();
+    });
+
+    m_vConnections.erase(itRemoveConnections, m_vConnections.end());
 }
 
 Connection Diagram::findConnector(QPointF pt) const

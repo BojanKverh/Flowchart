@@ -128,6 +128,19 @@ public:
      * @return index of output connector on which the point is located. If no such output connector can be found, -1 is returned
      */
     int findOutput(QPointF pt, double f = 1.0) const;
+    /**
+     * @brief inputPos Returns the position of input connector
+     * @param f scale factor
+     * @return Position of the input connector
+     */
+    QPointF inputPos(double f = 1.0) const;
+    /**
+     * @brief outputPos Returns the position of i-th output connector
+     * @param i output connector index
+     * @param f scale factor
+     * @return Position of the i-th output connector
+     */
+    QPointF outputPos(int i, double f = 1.0) const;
 
 protected:
     /**
@@ -172,9 +185,10 @@ protected:
      * @brief area Returns the rectnagle with center at pt and given size
      * @param pt Central point
      * @param size Rectangle size
+     * @param align Alignment flags
      * @return Calculated rectangle
      */
-    QRectF area(QPointF pt, int size) const;
+    QRectF area(QPointF pt, int size, Qt::Alignment align) const;
 
 protected:
     bool m_selected = false;

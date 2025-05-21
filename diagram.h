@@ -46,10 +46,15 @@ public:
      */
     Error addConnection(const Connection& con);
     /**
-     * @brief select Selects the n-th shape and deselects all the others
+     * @brief selectShape Selects the n-th shape and deselects all the others
      * @param n Shape index
      */
-    void select(int n);
+    void selectShape(int n);
+    /**
+     * @brief selectConnection Selects the n-th connection and deselects all the others
+     * @param n Connection index
+     */
+    void selectConnection(int n);
     /**
      * @brief findShape Finds the index of the shape, which contains the point pt
      * @param pt Point to look for
@@ -58,10 +63,21 @@ public:
      */
     int findShape(QPointF pt) const;
     /**
+     * @brief findConnection Finds the index of the connection, which contains point pt
+     * @param pt Point to look for
+     * @return Index of the connection, which contains the point pt. If no such connection
+     * can be found, -1 is returned
+     */
+    int findConnection(QPointF pt) const;
+    /**
      * @brief moveSelected Moves the selected shapes by given point
      * @param pt Vector by which the selected shapes will be moved
      */
     void moveSelected(QPointF pt);
+    /**
+     * @brief deleteSelected Deletes the selected shapes and connections
+     */
+    void deleteSelected();
     /**
      * @brief isOnConnector checks if point is on any connector
      * @param pt Point to check

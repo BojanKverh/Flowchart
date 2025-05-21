@@ -6,7 +6,7 @@
 ShapeDecision::ShapeDecision() : AbstractShape()
 {
     m_type = ShapeType::esDecision;
-    m_size = QSize(75, 75);
+    m_size = QSize(100, 75);
     m_text = QObject::tr("?");
     m_connectIn = QPointF(0.5, 0);
     m_vConnectsOut << QPointF(0, 0.5) << QPointF(1, 0.5);

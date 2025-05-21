@@ -1,5 +1,7 @@
 #include "abstractshape.h"
 
+namespace data {
+
 void AbstractShape::moveCenter(QPointF pt)
 {
     m_pt = QPointF(pt.x() - m_size.width() / 2, pt.y() - m_size.height() / 2);
@@ -140,3 +142,5 @@ QRectF AbstractShape::area(QPointF pt, int size, Qt::Alignment align) const
 {
     return QRectF(pt.x() - size / 2, pt.y() - size / 2, size, size);
 }
+
+} // namespace

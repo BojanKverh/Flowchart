@@ -4,6 +4,8 @@
 
 #include <QPainter>
 
+namespace data {
+
 /**
  * @brief The Connection class This class holds the connection between two shapes
  */
@@ -123,3 +125,5 @@ private:
     static constexpr int m_cSelectionSize = 5;
     static constexpr int m_cInflateSize = 10;
 };
+
+} // namespace

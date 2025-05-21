@@ -22,13 +22,14 @@ SOURCES += \
     shapes/shapeprocess.cpp \
     shapes/shapestart.cpp \
     windowmain.cpp
+    json/diagram.cpp
 
 HEADERS += \
     connection.h \
-    shapes/abstractshape.h \
     diagram.h \
     drawarea.h \
     scrollarea.h \
+    shapes/abstractshape.h \
     shapes/shapedecision.h \
     shapes/shapeend.h \
     shapes/shapefactory.h \
@@ -37,6 +38,7 @@ HEADERS += \
     shapes/shapestart.h \
     shapes/shapetype.h \
     windowmain.h
+    json/diagram.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

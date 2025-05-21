@@ -2,6 +2,8 @@
 
 #include "shapestart.h"
 
+namespace data {
+
 ShapeStart::ShapeStart() : AbstractShape()
 {
     m_type = ShapeType::esStart;
@@ -23,3 +25,4 @@ void ShapeStart::draw(QPainter& P, double f)
     drawDecorations(P, f);
 }
 
+} // namespace

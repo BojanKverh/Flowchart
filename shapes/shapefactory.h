@@ -11,5 +11,5 @@
 class ShapeFactory
 {
 public:
-    static std::unique_ptr<AbstractShape> shape(int type);
+    static std::unique_ptr<data::AbstractShape> shape(int type);
 };

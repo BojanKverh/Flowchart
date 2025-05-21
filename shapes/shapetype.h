@@ -1,5 +1,7 @@
 #pragma once
 
+namespace data {
+
 enum class ShapeType
 {
     esStart = 0,
@@ -8,3 +10,5 @@ enum class ShapeType
     esProcess = 3,
     esDecision = 4
 };
+
+} // namespace

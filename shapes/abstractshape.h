@@ -9,6 +9,8 @@
 
 #include "shapetype.h"
 
+namespace data {
+
 /**
  * @brief The AbstractShape class This class is a base class for all shapes
  */
@@ -205,3 +207,5 @@ protected:
     const int m_cConnectorSize = 7;
     const int m_cSelectionSize = 5;
 };
+
+} // namespace

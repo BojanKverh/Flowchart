@@ -7,8 +7,10 @@
 #include "shapedecision.h"
 #include "shapeio.h"
 
-std::unique_ptr<AbstractShape> ShapeFactory::shape(int type)
+std::unique_ptr<data::AbstractShape> ShapeFactory::shape(int type)
 {
+    using namespace data;
+
     auto eType = static_cast<ShapeType>(type);
 
     switch(eType) {

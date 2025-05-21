@@ -3,6 +3,8 @@
 
 #include "shapedecision.h"
 
+namespace data {
+
 ShapeDecision::ShapeDecision() : AbstractShape()
 {
     m_type = ShapeType::esDecision;
@@ -28,3 +30,4 @@ void ShapeDecision::draw(QPainter& P, double f)
     drawDecorations(P, f);
 }
 
+} // namespace

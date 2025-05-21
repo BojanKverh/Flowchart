@@ -2,6 +2,8 @@
 
 #include "abstractshape.h"
 
+namespace data {
+
 /**
  * @brief The ShapeDecision class This is a shape for decision element
  */
@@ -19,3 +21,5 @@ public:
      */
     void draw(QPainter& P, double f = 1.0) override;
 };
+
+} // namespace

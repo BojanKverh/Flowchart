@@ -2,6 +2,8 @@
 
 #include "abstractshape.h"
 
+namespace data {
+
 /**
  * @brief The ShapeIO class This is a shape for I/O element
  */
@@ -20,3 +22,4 @@ public:
     void draw(QPainter& P, double f = 1.0) override;
 };
 
+} // namespace

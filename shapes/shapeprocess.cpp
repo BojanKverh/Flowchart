@@ -2,6 +2,8 @@
 
 #include "shapeprocess.h"
 
+namespace data {
+
 ShapeProcess::ShapeProcess() : AbstractShape()
 {
     m_type = ShapeType::esProcess;
@@ -22,3 +24,4 @@ void ShapeProcess::draw(QPainter& P, double f)
     drawDecorations(P, f);
 }
 
+} // namespace

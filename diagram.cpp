@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <unordered_set>
 
+namespace data {
+
 Diagram::Diagram() {}
 
 Diagram::Error Diagram::addShape(std::unique_ptr<AbstractShape> shape)
@@ -121,3 +123,5 @@ bool Diagram::hasEnd() const
     });
     return it != m_vShapes.end();
 }
+
+} // namespace

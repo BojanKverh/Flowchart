@@ -6,6 +6,7 @@
 #include "shapes/abstractshape.h"
 #include "connection.h"
 
+namespace data {
 /**
  * @brief The Diagram class This class represents a diagram of shapes and connections
  */
@@ -103,3 +104,5 @@ private:
     std::vector<std::unique_ptr<AbstractShape>> m_vShapes;
     std::vector<Connection> m_vConnections;
 };
+
+} // namespace

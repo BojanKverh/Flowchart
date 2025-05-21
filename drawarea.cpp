@@ -78,7 +78,7 @@ void DrawArea::mouseReleaseEvent(QMouseEvent* pME)
     }
 
     m_drag.reset();
-    m_conStart = Connection(nullptr, -1, nullptr);
+    m_conStart = data::Connection(nullptr, -1, nullptr);
 }
 
 void DrawArea::keyPressEvent(QKeyEvent* pKE)
@@ -138,10 +138,10 @@ void DrawArea::dropEvent(QDropEvent* pDE)
         auto err = m_diagram.addShape(std::move(shape));
         QString errMsg;
         switch (err) {
-          case Diagram::Error::eStartExists:
+        case data::Diagram::Error::eStartExists:
               errMsg = tr("The diagram can only contain one START element!");
               break;
-          case Diagram::Error::eEndExists:
+        case data::Diagram::Error::eEndExists:
               errMsg = tr("The diagram can only contain one END element!");
               break;
           default:

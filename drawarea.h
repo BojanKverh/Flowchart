@@ -27,7 +27,7 @@ protected:
     void dropEvent(QDropEvent* pDE) override;
 
 private:
-    Diagram m_diagram;
+    data::Diagram m_diagram;
     std::optional<QPointF> m_drag;
-    Connection m_conStart;
+    data::Connection m_conStart;
 };

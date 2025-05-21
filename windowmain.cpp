@@ -6,6 +6,8 @@
 #include <QDrag>
 #include <QMenu>
 #include <QMenuBar>
+#include <QApplication>
+#include <QFileDialog>
 
 #include "scrollarea.h"
 #include "drawarea.h"
@@ -25,11 +27,11 @@ void WindowMain::buildUI()
     m_ptb = new QToolBar;
     m_ptb->setAllowedAreas(Qt::LeftToolBarArea | Qt::RightToolBarArea | Qt::TopToolBarArea | Qt::BottomToolBarArea);
 
-    addButton(":/res/icons/start.png", tr("Start"), ShapeType::esStart);
-    addButton(":/res/icons/end.png", tr("End"), ShapeType::esEnd);
-    addButton(":/res/icons/io.png", tr("Input/Output"), ShapeType::esIO);
-    addButton(":/res/icons/process.png", tr("Process"), ShapeType::esProcess);
-    addButton(":/res/icons/decision.png", tr("Decision"), ShapeType::esDecision);
+    addButton(":/res/icons/start.png", tr("Start"), data::ShapeType::esStart);
+    addButton(":/res/icons/end.png", tr("End"), data::ShapeType::esEnd);
+    addButton(":/res/icons/io.png", tr("Input/Output"), data::ShapeType::esIO);
+    addButton(":/res/icons/process.png", tr("Process"), data::ShapeType::esProcess);
+    addButton(":/res/icons/decision.png", tr("Decision"), data::ShapeType::esDecision);
 
     addToolBar(m_ptb);
 
@@ -42,16 +44,16 @@ void WindowMain::buildUI()
 
     auto* menuBar = new QMenuBar;
     auto* pMenu = new QMenu(tr("File"));
-    pMenu->addAction(tr("Load"), []() {});
-    pMenu->addAction(tr("Save"), []() {});
+    pMenu->addAction(tr("Load"), this, &WindowMain::load);
+    pMenu->addAction(tr("Save"), this, &WindowMain::save);
     pMenu->addSeparator();
-    pMenu->addAction(tr("Quit"), []() {});
+    pMenu->addAction(tr("Quit"), this, &WindowMain::quit);
     menuBar->addMenu(pMenu);
 
     setMenuBar(menuBar);
 }
 
-void WindowMain::addButton(QString icon, QString text, ShapeType shape)
+void WindowMain::addButton(QString icon, QString text, data::ShapeType shape)
 {
     auto* ptb = new QToolButton;
     ptb->setIcon(QIcon(icon));
@@ -72,4 +74,26 @@ void WindowMain::addButton(QString icon, QString text, ShapeType shape)
     });
 
     m_ptb->addWidget(ptb);
+}
+
+void WindowMain::load()
+{
+    auto file = QFileDialog::getOpenFileName(this, tr("Select file to load from"), ".", "*.fcd");
+    if (file.isEmpty() == true)
+        return;
+
+
+}
+
+void WindowMain::save()
+{
+    auto file = QFileDialog::getSaveFileName(this, tr("Select file to save into"), ".", "*.fcd");
+    if (file.isEmpty() == true)
+        return;
+
+}
+
+void WindowMain::quit()
+{
+    QApplication::instance()->quit();
 }

@@ -2,6 +2,8 @@
 
 #include "shapeend.h"
 
+namespace data {
+
 ShapeEnd::ShapeEnd() : AbstractShape()
 {
     m_type = ShapeType::esEnd;
@@ -23,3 +25,4 @@ void ShapeEnd::draw(QPainter& P, double f)
     drawDecorations(P, f);
 }
 
+} // namespace

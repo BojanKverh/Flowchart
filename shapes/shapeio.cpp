@@ -3,6 +3,8 @@
 
 #include "shapeio.h"
 
+namespace data {
+
 ShapeIO::ShapeIO() : AbstractShape()
 {
     m_type = ShapeType::esIO;
@@ -26,3 +28,4 @@ void ShapeIO::draw(QPainter& P, double f)
     drawDecorations(P, f);
 }
 
+} // namespace

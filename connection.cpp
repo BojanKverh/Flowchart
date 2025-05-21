@@ -4,6 +4,8 @@
 #include <QLineF>
 #include <QDebug>
 
+namespace data {
+
 Connection::Connection(AbstractShape* out, int outIndex, AbstractShape* in) :
     m_out(out), m_outIndex(outIndex), m_in(in)
 {}
@@ -109,3 +111,5 @@ bool Connection::contains(QPointF pt) const
 
     return false;
 }
+
+} // namespace

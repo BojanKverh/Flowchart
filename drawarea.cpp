@@ -61,6 +61,12 @@ void DrawArea::mouseReleaseEvent(QMouseEvent* pME)
 {
     auto pt = pME->position();
     auto con = m_diagram.findConnector(pt);
+    if ((con.isEnd() == false) && (m_conStart.isOutput() == true)) {
+        int i = m_diagram.findShape(pt);
+        if (i >= 0)
+            con.setIn(m_diagram.shapes().at(i).get());
+    }
+
     if ((m_conStart.isEnd() == true) && (con.isEnd() == true)) {
         m_conStart.addEnd(con.isOutput() == true? con.out() : con.in(), con.outIndex());
         m_conStart.update();

@@ -38,6 +38,11 @@ public:
      */
     AbstractShape* in() const { return m_in; }
     /**
+     * @brief setIn Sets the shape for input connector
+     * @param in New input connector shape
+     */
+    void setIn(AbstractShape* in) { m_in = in; }
+    /**
      * @brief contains Returns true, if the connection contains the given shape
      * @param end Shape to check
      * @return true, if the connection connects the given shape to another shape and

@@ -124,7 +124,7 @@ void DrawArea::paintEvent(QPaintEvent* pPE)
 void DrawArea::dragEnterEvent(QDragEnterEvent* pDEE)
 {
     auto* data = pDEE->mimeData();
-    if (data->property("type").isValid() == true)
+    if (data->property(m_cType.toLatin1()).isValid() == true)
         pDEE->acceptProposedAction();
 }
 
@@ -132,7 +132,7 @@ void DrawArea::dropEvent(QDropEvent* pDE)
 {
     auto data = pDE->mimeData();
     bool ok;
-    auto shape = ShapeFactory::shape(data->property("type").toInt(&ok));
+    auto shape = ShapeFactory::shape(data->property(m_cType.toLatin1()).toInt(&ok));
     if (ok == true && shape.get() != nullptr) {
         shape->moveCenter(pDE->position());
         auto err = m_diagram.addShape(std::move(shape));

@@ -41,6 +41,13 @@ public:
      */
     Error addShape(std::unique_ptr<AbstractShape> shape);
     /**
+     * @brief indexOf Returns the index of given shape in the vector of shapes
+     * @param shape Pointer to the shape to find
+     * @return Index of the given shape in the vector of shapes. If no such shape
+     * can be found, this method will return -1
+     */
+    int indexOf(AbstractShape* shape) const;
+    /**
      * @brief addConnection Tries to append a new connection
      * @param con Reference to the connection
      * @return true, if the connection was added and false otherwise

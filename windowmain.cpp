@@ -11,6 +11,7 @@
 
 #include "scrollarea.h"
 #include "drawarea.h"
+#include "json/diagram.h"
 
 WindowMain::WindowMain(QWidget *parent)
     : QMainWindow(parent)
@@ -91,6 +92,14 @@ void WindowMain::save()
     if (file.isEmpty() == true)
         return;
 
+    json::Diagram diagram(m_pCanvas->diagram(), m_pCanvas->width(), m_pCanvas->height());
+    QFile f(file);
+    if (f.open(QFile::WriteOnly) == false)
+        return;
+
+    QTextStream ts(&f);
+    f.write(diagram.toJson().toJson());
+    f.close();
 }
 
 void WindowMain::quit()

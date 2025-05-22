@@ -18,6 +18,18 @@ Diagram::Error Diagram::addShape(std::unique_ptr<AbstractShape> shape)
     return Error::eNone;
 }
 
+int Diagram::indexOf(AbstractShape* shape) const
+{
+    auto it = std::find_if(m_vShapes.begin(), m_vShapes.end(), [shape](const std::unique_ptr<AbstractShape>& it) {
+        return it.get() == shape;
+    });
+
+    if (it != m_vShapes.end())
+        return std::distance(m_vShapes.begin(), it);
+    else
+        return -1;
+}
+
 Diagram::Error Diagram::addConnection(const Connection& con)
 {
     m_vConnections.push_back(con);

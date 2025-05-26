@@ -1,6 +1,7 @@
 #include "drawarea.h"
 
 #include "shapes/shapefactory.h"
+#include "dialogshape.h"
 
 #include <QPaintEvent>
 #include <QPainter>
@@ -33,6 +34,13 @@ void DrawArea::mousePressEvent(QMouseEvent* pME)
     }
 }
 
+void DrawArea::mouseDoubleClickEvent(QMouseEvent* pME)
+{
+    if (pME->button() == Qt::LeftButton) {
+        editProperties(pME->pos());
+    }
+}
+
 void DrawArea::mouseMoveEvent(QMouseEvent* pME)
 {
     auto pt = pME->position();
@@ -59,26 +67,32 @@ void DrawArea::mouseMoveEvent(QMouseEvent* pME)
 
 void DrawArea::mouseReleaseEvent(QMouseEvent* pME)
 {
-    auto pt = pME->position();
-    auto con = m_diagram.findConnector(pt);
-    if ((con.isEnd() == false) && (m_conStart.isOutput() == true)) {
-        int i = m_diagram.findShape(pt);
-        if (i >= 0)
-            con.setIn(m_diagram.shapes().at(i).get());
+    if (pME->button() == Qt::LeftButton) {
+        auto pt = pME->position();
+        auto con = m_diagram.findConnector(pt);
+        if ((con.isEnd() == false) && (m_conStart.isOutput() == true)) {
+            int i = m_diagram.findShape(pt);
+            if (i >= 0)
+                con.setIn(m_diagram.shapes().at(i).get());
+        }
+
+        if ((m_conStart.isEnd() == true) && (con.isEnd() == true)) {
+            m_conStart.addEnd(con.isOutput() == true? con.out() : con.in(), con.outIndex());
+            m_conStart.update();
+            m_conStart.setSelected(true);
+            m_diagram.selectShape(-1);
+            m_diagram.selectConnection(-1);
+            m_diagram.addConnection(m_conStart);
+            update();
+        }
+
+        m_drag.reset();
+        m_conStart = data::Connection(nullptr, -1, nullptr);
+    } else if (pME->button() == Qt::RightButton) {
+        editProperties(pME->pos());
     }
 
-    if ((m_conStart.isEnd() == true) && (con.isEnd() == true)) {
-        m_conStart.addEnd(con.isOutput() == true? con.out() : con.in(), con.outIndex());
-        m_conStart.update();
-        m_conStart.setSelected(true);
-        m_diagram.selectShape(-1);
-        m_diagram.selectConnection(-1);
-        m_diagram.addConnection(m_conStart);
-        update();
-    }
-
-    m_drag.reset();
-    m_conStart = data::Connection(nullptr, -1, nullptr);
+    QWidget::mouseReleaseEvent(pME);
 }
 
 void DrawArea::keyPressEvent(QKeyEvent* pKE)
@@ -156,4 +170,23 @@ void DrawArea::dropEvent(QDropEvent* pDE)
             QMessageBox::critical(this, tr("Shape adding failed"), errMsg);
     }
 }
+
+void DrawArea::editProperties(const QPointF& pt)
+{
+    auto index = m_diagram.findShape(pt);
+    if (index >= 0) {
+        m_diagram.selectShape(index);
+        update();
+        auto* shape = m_diagram.shapes()[index].get();
+        DialogShape dlg(shape, this);
+        if (dlg.exec() == true) {
+            shape->setBackgroundColor(dlg.backgroundColor());
+            shape->setTextColor(dlg.textColor());
+            shape->setText(dlg.text());
+        }
+        return;
+    }
+    update();
+}
+
 

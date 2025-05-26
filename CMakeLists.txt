@@ -32,6 +32,7 @@ set(SOURCES
 set(HEADERS
     connection.h
     diagram.h
+    dialogshape.h
     drawarea.h
     scrollarea.h
     shapes/abstractshape.h
@@ -65,6 +66,8 @@ add_executable(${PROJECT_NAME}
     json/shapefactory.cpp
     json/connection.h
     json/connection.cpp
+    dialogshape.cpp
+
 )
 
 # Poveži Qt6 knjižnice

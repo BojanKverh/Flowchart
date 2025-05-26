@@ -26,14 +26,25 @@ public:
      */
     data::Diagram& diagram() { return m_diagram; }
 
+signals:
+    /**
+     * @brief signalEditProperties Emitted when there is a request to edit element properties
+     * @param pt Point of click
+     */
+    void signalEditProperties(const QPointF& pt);
+
 protected:
     void mousePressEvent(QMouseEvent* pME) override;
+    void mouseDoubleClickEvent(QMouseEvent* pME) override;
     void mouseMoveEvent(QMouseEvent* pME) override;
     void mouseReleaseEvent(QMouseEvent* pME) override;
     void keyPressEvent(QKeyEvent* pKE) override;
     void paintEvent(QPaintEvent* pPE) override;
     void dragEnterEvent(QDragEnterEvent* pDEE) override;
     void dropEvent(QDropEvent* pDE) override;
+
+private:
+    void editProperties(const QPointF& pt);
 
 private:
     data::Diagram m_diagram;

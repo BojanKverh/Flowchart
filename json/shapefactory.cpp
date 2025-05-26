@@ -10,7 +10,12 @@ ShapeFactory::ShapeFactory()
 
 AbstractShape* ShapeFactory::io(data::AbstractShape* shape) const
 {
-    switch (shape->type()) {
+    return io(shape->type());
+}
+
+AbstractShape* ShapeFactory::io(data::ShapeType type) const
+{
+    switch (type) {
     case data::ShapeType::esStart:
     case data::ShapeType::esEnd:
         return m_abstract.get();

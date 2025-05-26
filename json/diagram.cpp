@@ -23,14 +23,14 @@ QJsonDocument Diagram::toJson() const
 
     ShapeFactory factory;
 
-    obj["w"] = m_w;
-    obj["h"] = m_h;
+    obj[m_cqsWidth] = m_w;
+    obj[m_cqsHeight] = m_h;
 
     for (const auto& shape : shapes) {
         auto* io = factory.io(shape.get());
         arrShapes << io->toJson(shape.get());
     }
-    obj["shapes"] = arrShapes;
+    obj[m_cqsShapes] = arrShapes;
 
     QJsonArray arrCon;
     Connection conIO;
@@ -39,10 +39,37 @@ QJsonDocument Diagram::toJson() const
     for (const auto& con : connections) {
         arrCon << conIO.toJson(con, m_diagram);
     }
-    obj["cons"] = arrCon;
+    obj[m_cqsConnections] = arrCon;
 
     doc.setObject(obj);
     return doc;
+}
+
+void Diagram::fromJson(const QJsonDocument& doc)
+{
+    m_diagram.clear();
+
+    auto obj = doc.object();
+    m_w = obj[m_cqsWidth].toInt();
+    m_h = obj[m_cqsHeight].toInt();
+    auto shapes = obj[m_cqsShapes].toArray();
+    ShapeFactory factory;
+
+    for (const auto& oneShape : shapes) {
+        auto objShape = oneShape.toObject();
+        auto* io = factory.io(static_cast<data::ShapeType>(objShape["type"].toInt()));
+        auto* shape = io->fromJson(objShape);
+        m_diagram.addShape(std::unique_ptr<data::AbstractShape>(shape));
+    }
+
+    Connection conIO;
+    auto cons = obj[m_cqsConnections].toArray();
+    for (const auto& oneCon : cons) {
+        auto objCon = oneCon.toObject();
+        auto con = conIO.fromJson(objCon, m_diagram);
+        con.update();
+        m_diagram.addConnection(con);
+    }
 }
 
 } // namespace

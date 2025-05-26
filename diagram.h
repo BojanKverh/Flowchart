@@ -25,6 +25,10 @@ public:
      */
     Diagram();
     /**
+     * @brief clear Clears all the diagram data
+     */
+    void clear();
+    /**
      * @brief shapes Returns all the shapes
      * @return Reference to the vector containing all the shapes
      */

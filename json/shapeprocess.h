@@ -2,8 +2,6 @@
 
 #include "abstractshape.h"
 
-#include "../shapes/shapeprocess.h"
-
 namespace json {
 
 /**
@@ -22,6 +20,15 @@ public:
      * @return Generated JSON object
      */
     QJsonObject toJson(data::AbstractShape *shape) const override;
+    /**
+     * @brief fromJson Parses the shape data from JSON object and creates a proper shape
+     * @param obj JSON object to parse
+     * @return Pointer to the created shape. Caller is responsible to delete the returned object
+     */
+    data::AbstractShape* fromJson(const QJsonObject& obj) const override;
+
+protected:
+    const QString m_cqsText = "text";
 };
 
 } // namespace

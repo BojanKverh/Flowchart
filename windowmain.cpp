@@ -83,7 +83,15 @@ void WindowMain::load()
     if (file.isEmpty() == true)
         return;
 
+    QFile f(file);
+    f.open(QFile::ReadOnly);
+    json::Diagram diagram(m_pCanvas->diagram(), m_pCanvas->width(), m_pCanvas->height());
+    auto doc = QJsonDocument::fromJson(f.readAll());
+    diagram.fromJson(doc);
+    f.close();
 
+    m_pCanvas->resize(diagram.width(), diagram.height());
+    m_pCanvas->update();
 }
 
 void WindowMain::save()

@@ -18,6 +18,12 @@ Diagram::Error Diagram::addShape(std::unique_ptr<AbstractShape> shape)
     return Error::eNone;
 }
 
+void Diagram::clear()
+{
+    m_vConnections.clear();
+    m_vShapes.clear();
+}
+
 int Diagram::indexOf(AbstractShape* shape) const
 {
     auto it = std::find_if(m_vShapes.begin(), m_vShapes.end(), [shape](const std::unique_ptr<AbstractShape>& it) {

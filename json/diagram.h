@@ -24,11 +24,31 @@ public:
      * @return Generated JSON document
      */
     QJsonDocument toJson() const;
+    /**
+     * @brief fromJson Parses the diagram data from given JSON document
+     * @param doc Document to parse
+     */
+    void fromJson(const QJsonDocument& doc);
+    /**
+     * @brief width Returns the parsed width
+     * @return parsed width
+     */
+    int width() const { return m_w; }
+    /**
+     * @brief height Returns the parsed height
+     * @return parsed height
+     */
+    int height() const { return m_h; }
 
 private:
     data::Diagram& m_diagram;
     int m_w;
     int m_h;
+
+    const QString m_cqsWidth = "w";
+    const QString m_cqsHeight = "h";
+    const QString m_cqsShapes = "shapes";
+    const QString m_cqsConnections = "cons";
 };
 
 } // namespace

@@ -7,6 +7,7 @@
 #include <QPainter>
 #include <QMimeData>
 #include <QMessageBox>
+#include <QMenu>
 
 DrawArea::DrawArea(QWidget* parent) : QWidget(parent), m_conStart(nullptr, -1, nullptr)
 {
@@ -14,6 +15,9 @@ DrawArea::DrawArea(QWidget* parent) : QWidget(parent), m_conStart(nullptr, -1, n
     setAcceptDrops(true);
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
+
+    setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(this, &DrawArea::customContextMenuRequested, this, &DrawArea::showContextMenu);
 }
 
 void DrawArea::mousePressEvent(QMouseEvent* pME)
@@ -88,8 +92,6 @@ void DrawArea::mouseReleaseEvent(QMouseEvent* pME)
 
         m_drag.reset();
         m_conStart = data::Connection(nullptr, -1, nullptr);
-    } else if (pME->button() == Qt::RightButton) {
-        editProperties(pME->pos());
     }
 
     QWidget::mouseReleaseEvent(pME);
@@ -187,6 +189,36 @@ void DrawArea::editProperties(const QPointF& pt)
         return;
     }
     update();
+}
+
+void DrawArea::showContextMenu(const QPoint& pt)
+{
+    auto index = m_diagram.findShape(pt);
+    if (index >= 0) {
+        m_diagram.selectShape(index);
+        QMenu menu;
+        menu.move(mapToGlobal(pt));
+        menu.addAction(tr("Delete"), [index, this]() {
+            m_diagram.deleteSelected();
+        });
+        menu.addAction(tr("Edit properties"), [pt, this]() {
+            editProperties(pt);
+        });
+        menu.exec();
+        return;
+    }
+
+    index = m_diagram.findConnection(pt);
+    if (index >= 0) {
+        m_diagram.selectConnection(index);
+        QMenu menu;
+        menu.move(mapToGlobal(pt));
+        menu.addAction(tr("Delete"), [index, this]() {
+            m_diagram.deleteSelected();
+        });
+
+        menu.exec();
+    }
 }
 
 

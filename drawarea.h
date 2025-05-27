@@ -45,6 +45,7 @@ protected:
 
 private:
     void editProperties(const QPointF& pt);
+    void showContextMenu(const QPoint& pt);
 
 private:
     data::Diagram m_diagram;

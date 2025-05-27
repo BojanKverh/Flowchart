@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <unordered_set>
 #include <memory>
 
 #include "shapes/abstractshape.h"
@@ -45,14 +46,34 @@ public:
     void redo();
     /**
      * @brief shapes Returns all the shapes
-     * @return Reference to the vector containing all the shapes
+     * @return Read only reference to the vector containing all the shapes
      */
     const std::vector<std::unique_ptr<AbstractShape>>& shapes() const { return m_vShapes; }
     /**
      * @brief connections Returns all the connections
-     * @return Reference to the vector containing all the connections
+     * @return Read only reference to the vector containing all the connections
      */
-    const std::vector<Connection> connections() const { return m_vConnections; }
+    const std::vector<Connection>& connections() const { return m_vConnections; }
+    /**
+     * @brief shapes Returns all the shapes
+     * @return Full access reference to the vector containing all the shapes
+     */
+    std::vector<std::unique_ptr<AbstractShape>>& shapes() { return m_vShapes; }
+    /**
+     * @brief connections Returns all the connections
+     * @return Full access reference to the vector containing all the connections
+     */
+    std::vector<Connection>& connections() { return m_vConnections; }
+    /**
+     * @brief selectedShapes Returns the collection of selected shapes' indices
+     * @return collection of selected shapes' indices
+     */
+    std::unordered_set<int> selectedShapes() const;
+    /**
+     * @brief selectedConnections Returns the collection of selected connections' indices
+     * @return collection of selected connections' indices
+     */
+    std::unordered_set<int> selectedConnections() const;
     /**
      * @brief indexOf Returns the index of given shape in the vector of shapes
      * @param shape Pointer to the shape to find
@@ -67,6 +88,12 @@ public:
      * found, -1 is returned
      */
     int findShape(QPointF pt) const;
+    /**
+     * @brief findShape Returns index of the given shape. If no such shape can be found, it will return -1
+     * @param shape Pointer to the shape
+     * @return Index of the shape
+     */
+    int findShape(data::AbstractShape* shape) const;
     /**
      * @brief findConnection Finds the index of the connection, which contains point pt
      * @param pt Point to look for
@@ -116,6 +143,11 @@ public:
      * @return true, if the connection was added and false otherwise
      */
     Error addConnection(const Connection& con);
+    /**
+     * @brief removeConnection Removes the i-th connection. This method is supposed to be called by QUndoStack only
+     * @param i Connection index
+     */
+    void removeConnection(int i);
     /**
      * @brief selectConnection Selects the n-th connection and deselects all the others. This method is supposed to be
      * called by QUndoStack only

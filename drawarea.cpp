@@ -4,6 +4,7 @@
 #include "dialogshape.h"
 
 #include "undo/addshape.h"
+#include "undo/addconnection.h"
 
 #include <QPaintEvent>
 #include <QPainter>
@@ -39,16 +40,15 @@ void DrawArea::mousePressEvent(QMouseEvent* pME)
 {
     if (pME->button() == Qt::LeftButton) {
         auto pt = pME->position();
-        auto i = m_diagram.findShape(pt);
+        auto iS = m_diagram.findShape(pt);
+        auto iC = (iS < 0? m_diagram.findConnection(pt) : -1);
+
         m_drag = pt;
-        m_diagram.selectShape(i);
         m_conStart = m_diagram.findConnector(m_drag.value());
-        if (i >= 0) {
-            m_diagram.selectConnection(-1);
-        } else {
-            i = m_diagram.findConnection(pt);
-            m_diagram.selectConnection(i);
-        }
+
+        auto* com = new undo::SwitchSelection(m_diagram);
+        com->recordSelections({iS}, {iC});
+        m_diagram.addOperation(com);
         update();
     }
 }
@@ -97,11 +97,9 @@ void DrawArea::mouseReleaseEvent(QMouseEvent* pME)
 
         if ((m_conStart.isEnd() == true) && (con.isEnd() == true)) {
             m_conStart.addEnd(con.isOutput() == true? con.out() : con.in(), con.outIndex());
-            m_conStart.update();
-            m_conStart.setSelected(true);
-            m_diagram.selectShape(-1);
-            m_diagram.selectConnection(-1);
-            m_diagram.addConnection(m_conStart);
+            auto* com = new undo::AddConnection(
+                &m_emitter, m_diagram, m_diagram.findShape(m_conStart.out()), m_conStart.outIndex(), m_diagram.findShape(m_conStart.in()));
+            m_diagram.addOperation(com);
             update();
         }
 
@@ -166,14 +164,8 @@ void DrawArea::dropEvent(QDropEvent* pDE)
     auto shape = data::ShapeFactory::shape(data->property(m_cType.toLatin1()).toInt(&ok));
     if (ok == true && shape.get() != nullptr) {
         auto* com = new undo::AddShape(&m_emitter, m_diagram, shape->type(), pDE->position());
-        auto sz = m_diagram.shapes().size();
         m_diagram.addOperation(com);
-
-        if (m_diagram.shapes().size() > sz) {
-            update();
-            m_diagram.selectConnection(-1);
-            m_diagram.selectShape(m_diagram.shapes().size() - 1);
-        }
+        update();
     }
 }
 

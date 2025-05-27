@@ -70,6 +70,10 @@ add_executable(${PROJECT_NAME}
     undo/addshape.h
     undo/addshape.cpp
     erroremitter.h
+    undo/addconnection.h
+    undo/addconnection.cpp
+    undo/switchselection.h
+    undo/switchselection.cpp
 
 )
 

@@ -28,6 +28,28 @@ void Diagram::redo()
     m_stack.redo();
 }
 
+std::unordered_set<int> Diagram::selectedShapes() const
+{
+    std::unordered_set<int> set;
+
+    for (size_t i = 0; i < m_vShapes.size(); ++i)
+        if (m_vShapes[i]->isSelected() == true)
+            set.insert(i);
+
+    return set;
+}
+
+std::unordered_set<int> Diagram::selectedConnections() const
+{
+    std::unordered_set<int> set;
+
+    for (size_t i = 0; i < m_vConnections.size(); ++i)
+        if (m_vConnections[i].isSelected() == true)
+            set.insert(i);
+
+    return set;
+}
+
 int Diagram::indexOf(AbstractShape* shape) const
 {
     auto it = std::find_if(m_vShapes.begin(), m_vShapes.end(), [shape](const std::unique_ptr<AbstractShape>& it) {
@@ -44,6 +66,14 @@ int Diagram::findShape(QPointF pt) const
 {
     auto it = std::find_if(m_vShapes.begin(), m_vShapes.end(), [pt](const auto& shape) {
         return shape->contains(pt);
+    });
+    return (it == m_vShapes.end()? -1 : std::distance(m_vShapes.begin(), it));
+}
+
+int Diagram::findShape(data::AbstractShape* shape) const
+{
+    auto it = std::find_if(m_vShapes.begin(), m_vShapes.end(), [shape](const auto& itShape) {
+        return itShape.get() == shape;
     });
     return (it == m_vShapes.end()? -1 : std::distance(m_vShapes.begin(), it));
 }
@@ -113,6 +143,11 @@ Diagram::Error Diagram::addConnection(const Connection& con)
 {
     m_vConnections.push_back(con);
     return Error::eNone;
+}
+
+void Diagram::removeConnection(int i)
+{
+    m_vConnections.erase(m_vConnections.begin() + i);
 }
 
 void Diagram::selectConnection(int n)

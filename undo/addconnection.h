@@ -14,7 +14,7 @@ public:
     /**
      * @brief AddConnection Constructor
      * @param emitter Pointer to the error emitter
-     * @param diagram Referencet to the diagram
+     * @param diagram Reference to the diagram
      * @param out index of the shape containing the out connector
      * @param outIndex Out connector index
      * @param in index of the shape containing the in connector

@@ -74,6 +74,8 @@ add_executable(${PROJECT_NAME}
     undo/addconnection.cpp
     undo/switchselection.h
     undo/switchselection.cpp
+    undo/moveshape.h
+    undo/moveshape.cpp
 
 )
 

@@ -5,6 +5,7 @@
 
 #include "undo/addshape.h"
 #include "undo/addconnection.h"
+#include "undo/moveshape.h"
 
 #include <QPaintEvent>
 #include <QPainter>
@@ -69,7 +70,12 @@ void DrawArea::mouseMoveEvent(QMouseEvent* pME)
         if (m_conStart.isEnd() == true) {
 
         } else {
-            m_diagram.moveSelected(pt - m_drag.value());
+            //m_diagram.moveSelected(pt - m_drag.value());
+            auto set = m_diagram.selectedShapes();
+            for (auto it = set.begin(); it != set.end(); ++it) {
+                auto* com = new undo::MoveShape(m_diagram, *it, m_diagram.shapes()[*it]->position(), pt - m_drag.value());
+                m_diagram.addOperation(com);
+            }
         }
         update();
 

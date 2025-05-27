@@ -1,6 +1,7 @@
 #pragma once
 
 #include "diagram.h"
+#include "erroremitter.h"
 
 #include <QWidget>
 #include <optional>
@@ -25,13 +26,14 @@ public:
      * @return reference to the diagram
      */
     data::Diagram& diagram() { return m_diagram; }
-
-signals:
     /**
-     * @brief signalEditProperties Emitted when there is a request to edit element properties
-     * @param pt Point of click
+     * @brief undo Undoes the last operation
      */
-    void signalEditProperties(const QPointF& pt);
+    void undo();
+    /**
+     * @brief redo Redoes the last operation
+     */
+    void redo();
 
 protected:
     void mousePressEvent(QMouseEvent* pME) override;
@@ -47,10 +49,13 @@ private:
     void editProperties(const QPointF& pt);
     void showContextMenu(const QPoint& pt);
 
+    void handleError(data::Diagram::Error error);
+
 private:
     data::Diagram m_diagram;
     std::optional<QPointF> m_drag;
     data::Connection m_conStart;
 
     const QString m_cType = "type";
+    data::ErrorEmitter m_emitter;
 };

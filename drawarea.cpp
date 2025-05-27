@@ -3,6 +3,8 @@
 #include "shapes/shapefactory.h"
 #include "dialogshape.h"
 
+#include "undo/addshape.h"
+
 #include <QPaintEvent>
 #include <QPainter>
 #include <QMimeData>
@@ -18,6 +20,19 @@ DrawArea::DrawArea(QWidget* parent) : QWidget(parent), m_conStart(nullptr, -1, n
 
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, &DrawArea::customContextMenuRequested, this, &DrawArea::showContextMenu);
+    connect(&m_emitter, &data::ErrorEmitter::diagramError, this, &DrawArea::handleError);
+}
+
+void DrawArea::undo()
+{
+    m_diagram.undo();
+    update();
+}
+
+void DrawArea::redo()
+{
+    m_diagram.redo();
+    update();
 }
 
 void DrawArea::mousePressEvent(QMouseEvent* pME)
@@ -148,28 +163,17 @@ void DrawArea::dropEvent(QDropEvent* pDE)
 {
     auto data = pDE->mimeData();
     bool ok;
-    auto shape = ShapeFactory::shape(data->property(m_cType.toLatin1()).toInt(&ok));
+    auto shape = data::ShapeFactory::shape(data->property(m_cType.toLatin1()).toInt(&ok));
     if (ok == true && shape.get() != nullptr) {
-        shape->moveCenter(pDE->position());
-        auto err = m_diagram.addShape(std::move(shape));
-        QString errMsg;
-        switch (err) {
-        case data::Diagram::Error::eStartExists:
-              errMsg = tr("The diagram can only contain one START element!");
-              break;
-        case data::Diagram::Error::eEndExists:
-              errMsg = tr("The diagram can only contain one END element!");
-              break;
-          default:
-              break;
-        }
+        auto* com = new undo::AddShape(&m_emitter, m_diagram, shape->type(), pDE->position());
+        auto sz = m_diagram.shapes().size();
+        m_diagram.addOperation(com);
 
-        if (errMsg.isEmpty() == true) {
+        if (m_diagram.shapes().size() > sz) {
             update();
             m_diagram.selectConnection(-1);
             m_diagram.selectShape(m_diagram.shapes().size() - 1);
-        } else
-            QMessageBox::critical(this, tr("Shape adding failed"), errMsg);
+        }
     }
 }
 
@@ -221,4 +225,21 @@ void DrawArea::showContextMenu(const QPoint& pt)
     }
 }
 
+void DrawArea::handleError(data::Diagram::Error error)
+{
+    QString errMsg;
 
+    switch (error) {
+    case data::Diagram::Error::eStartExists:
+        errMsg = tr("The diagram can only contain one START element!");
+        break;
+    case data::Diagram::Error::eEndExists:
+        errMsg = tr("The diagram can only contain one END element!");
+        break;
+    default:
+        break;
+    }
+
+    if (errMsg.isEmpty() == false)
+        QMessageBox::critical(this, tr("Shape adding failed"), errMsg);
+}

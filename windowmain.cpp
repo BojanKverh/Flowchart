@@ -51,6 +51,11 @@ void WindowMain::buildUI()
     pMenu->addAction(tr("Quit"), this, &WindowMain::quit);
     menuBar->addMenu(pMenu);
 
+    pMenu = new QMenu(tr("Edit"));
+    pMenu->addAction(tr("Undo"), m_pCanvas, &DrawArea::undo);
+    pMenu->addAction(tr("Redo"), m_pCanvas, &DrawArea::redo);
+    menuBar->addMenu(pMenu);
+
     setMenuBar(menuBar);
 }
 

@@ -7,21 +7,25 @@ namespace data {
 
 Diagram::Diagram() {}
 
-Diagram::Error Diagram::addShape(std::unique_ptr<AbstractShape> shape)
-{
-    if ((shape->type() == ShapeType::esStart) && (hasStart() == true))
-        return Error::eStartExists;
-    if ((shape->type() == ShapeType::esEnd) && (hasEnd() == true))
-        return Error::eEndExists;
-
-    m_vShapes.push_back(std::move(shape));
-    return Error::eNone;
-}
-
 void Diagram::clear()
 {
     m_vConnections.clear();
     m_vShapes.clear();
+}
+
+void Diagram::addOperation(QUndoCommand* com)
+{
+    m_stack.push(com);
+}
+
+void Diagram::undo()
+{
+    m_stack.undo();
+}
+
+void Diagram::redo()
+{
+    m_stack.redo();
 }
 
 int Diagram::indexOf(AbstractShape* shape) const
@@ -34,24 +38,6 @@ int Diagram::indexOf(AbstractShape* shape) const
         return std::distance(m_vShapes.begin(), it);
     else
         return -1;
-}
-
-Diagram::Error Diagram::addConnection(const Connection& con)
-{
-    m_vConnections.push_back(con);
-    return Error::eNone;
-}
-
-void Diagram::selectShape(int n)
-{
-    for (size_t i = 0; i < m_vShapes.size(); ++i)
-        m_vShapes[i]->setSelected(static_cast<int>(i) == n);
-}
-
-void Diagram::selectConnection(int n)
-{
-    for (size_t i = 0; i < m_vConnections.size(); ++i)
-        m_vConnections[i].setSelected(static_cast<int>(i) == n);
 }
 
 int Diagram::findShape(QPointF pt) const
@@ -69,6 +55,70 @@ int Diagram::findConnection(QPointF pt) const
     });
 
     return (it == m_vConnections.end()? -1 : std::distance(m_vConnections.begin(), it));
+}
+
+Connection Diagram::findConnector(QPointF pt) const
+{
+    for (const auto& shape : m_vShapes) {
+        int outIndex = shape->findOutput(pt);
+        if (outIndex >= 0)
+            return Connection(shape.get(), outIndex, nullptr);
+        if (shape->isOnInput(pt) == true)
+            return Connection(nullptr, -1, shape.get());
+    }
+
+    return Connection(nullptr, -1, nullptr);
+}
+
+bool Diagram::hasStart() const
+{
+    auto it = std::find_if(m_vShapes.begin(), m_vShapes.end(), [](const auto& shape) {
+        return shape->type() == ShapeType::esStart;
+    });
+    return it != m_vShapes.end();
+}
+
+bool Diagram::hasEnd() const
+{
+    auto it = std::find_if(m_vShapes.begin(), m_vShapes.end(), [](const auto& shape) {
+        return shape->type() == ShapeType::esEnd;
+    });
+    return it != m_vShapes.end();
+}
+
+
+Diagram::Error Diagram::addShape(std::unique_ptr<AbstractShape> shape)
+{
+    if ((shape->type() == ShapeType::esStart) && (hasStart() == true))
+        return Error::eStartExists;
+    if ((shape->type() == ShapeType::esEnd) && (hasEnd() == true))
+        return Error::eEndExists;
+
+    m_vShapes.push_back(std::move(shape));
+    return Error::eNone;
+}
+
+void Diagram::removeShape(int i)
+{
+    m_vShapes.erase(m_vShapes.begin() + i);
+}
+
+void Diagram::selectShape(int n)
+{
+    for (size_t i = 0; i < m_vShapes.size(); ++i)
+        m_vShapes[i]->setSelected(static_cast<int>(i) == n);
+}
+
+Diagram::Error Diagram::addConnection(const Connection& con)
+{
+    m_vConnections.push_back(con);
+    return Error::eNone;
+}
+
+void Diagram::selectConnection(int n)
+{
+    for (size_t i = 0; i < m_vConnections.size(); ++i)
+        m_vConnections[i].setSelected(static_cast<int>(i) == n);
 }
 
 void Diagram::moveSelected(QPointF pt)
@@ -111,35 +161,6 @@ void Diagram::deleteSelected()
     });
 
     m_vConnections.erase(itRemoveConnections, m_vConnections.end());
-}
-
-Connection Diagram::findConnector(QPointF pt) const
-{
-    for (const auto& shape : m_vShapes) {
-        int outIndex = shape->findOutput(pt);
-        if (outIndex >= 0)
-            return Connection(shape.get(), outIndex, nullptr);
-        if (shape->isOnInput(pt) == true)
-            return Connection(nullptr, -1, shape.get());
-    }
-
-    return Connection(nullptr, -1, nullptr);
-}
-
-bool Diagram::hasStart() const
-{
-    auto it = std::find_if(m_vShapes.begin(), m_vShapes.end(), [](const auto& shape) {
-        return shape->type() == ShapeType::esStart;
-    });
-    return it != m_vShapes.end();
-}
-
-bool Diagram::hasEnd() const
-{
-    auto it = std::find_if(m_vShapes.begin(), m_vShapes.end(), [](const auto& shape) {
-        return shape->type() == ShapeType::esEnd;
-    });
-    return it != m_vShapes.end();
 }
 
 } // namespace

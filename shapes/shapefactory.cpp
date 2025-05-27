@@ -7,6 +7,8 @@
 #include "shapedecision.h"
 #include "shapeio.h"
 
+namespace data {
+
 std::unique_ptr<data::AbstractShape> ShapeFactory::shape(int type)
 {
     using namespace data;
@@ -29,3 +31,4 @@ std::unique_ptr<data::AbstractShape> ShapeFactory::shape(int type)
     }
 }
 
+} // namespace

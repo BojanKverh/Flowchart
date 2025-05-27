@@ -67,6 +67,9 @@ add_executable(${PROJECT_NAME}
     json/connection.h
     json/connection.cpp
     dialogshape.cpp
+    undo/addshape.h
+    undo/addshape.cpp
+    erroremitter.h
 
 )
 

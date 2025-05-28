@@ -6,6 +6,7 @@
 #include "undo/addshape.h"
 #include "undo/addconnection.h"
 #include "undo/moveshape.h"
+#include "undo/deleteselected.h"
 
 #include <QPaintEvent>
 #include <QPainter>
@@ -127,7 +128,7 @@ void DrawArea::mouseReleaseEvent(QMouseEvent* pME)
 void DrawArea::keyPressEvent(QKeyEvent* pKE)
 {
     if ((pKE->key() == Qt::Key_Delete) || (pKE->key() == Qt::Key_Backspace)) {
-        m_diagram.deleteSelected();
+        m_diagram.addOperation(new undo::DeleteSelected(m_diagram));
         update();
     }
 }
@@ -209,7 +210,7 @@ void DrawArea::showContextMenu(const QPoint& pt)
         QMenu menu;
         menu.move(mapToGlobal(pt));
         menu.addAction(tr("Delete"), [index, this]() {
-            m_diagram.deleteSelected();
+            m_diagram.addOperation(new undo::DeleteSelected(m_diagram));
         });
         menu.addAction(tr("Edit properties"), [pt, this]() {
             editProperties(pt);
@@ -224,7 +225,7 @@ void DrawArea::showContextMenu(const QPoint& pt)
         QMenu menu;
         menu.move(mapToGlobal(pt));
         menu.addAction(tr("Delete"), [index, this]() {
-            m_diagram.deleteSelected();
+            m_diagram.addOperation(new undo::DeleteSelected(m_diagram));
         });
 
         menu.exec();

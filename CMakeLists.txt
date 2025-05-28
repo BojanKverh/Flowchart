@@ -77,6 +77,8 @@ add_executable(${PROJECT_NAME}
     undo/moveshape.h
     undo/moveshape.cpp
     undo/undoid.h
+    undo/deleteselected.h
+    undo/deleteselected.cpp
 
 )
 

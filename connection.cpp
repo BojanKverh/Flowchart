@@ -6,6 +6,9 @@
 
 namespace data {
 
+Connection::Connection() : m_out(nullptr), m_outIndex(-1), m_in(nullptr)
+{}
+
 Connection::Connection(AbstractShape* out, int outIndex, AbstractShape* in) :
     m_out(out), m_outIndex(outIndex), m_in(in)
 {}

@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <unordered_set>
 
+#include <QDebug>
+
 namespace data {
 
 Diagram::Diagram() {}
@@ -116,6 +118,12 @@ bool Diagram::hasEnd() const
     return it != m_vShapes.end();
 }
 
+void Diagram::restoreShapes(std::vector<std::unique_ptr<AbstractShape>>& v)
+{
+    for (size_t i = 0; i < v.size(); ++i)
+        if (v[i] != nullptr)
+            m_vShapes.insert(m_vShapes.begin() + i, std::move(v[i]));
+}
 
 Diagram::Error Diagram::addShape(std::unique_ptr<AbstractShape> shape)
 {
@@ -137,6 +145,11 @@ void Diagram::selectShape(int n)
 {
     for (size_t i = 0; i < m_vShapes.size(); ++i)
         m_vShapes[i]->setSelected(static_cast<int>(i) == n);
+}
+
+void Diagram::restoreConnections(const std::vector<Connection> v)
+{
+    m_vConnections = v;
 }
 
 Diagram::Error Diagram::addConnection(const Connection& con)
@@ -173,29 +186,37 @@ void Diagram::moveSelected(QPointF pt)
     }
 }
 
-void Diagram::deleteSelected()
+std::tuple<std::vector<std::unique_ptr<AbstractShape> >, std::vector<Connection> > Diagram::deleteSelected()
 {
     std::unordered_set<AbstractShape*> set;
-    auto itRemoveShapes = std::remove_if(m_vShapes.begin(), m_vShapes.end(), [&](const std::unique_ptr<AbstractShape>& it) {
-        if (it->isSelected() == true) {
-            set.insert(it.get());
-            return true;
+    std::vector<data::Connection> deletedCons = m_vConnections;
+    std::vector<std::unique_ptr<data::AbstractShape>> deletedShapes;
+
+    size_t i = 0;
+    while (i < m_vShapes.size()) {
+        if (m_vShapes[i]->isSelected() == true) {
+            set.insert(m_vShapes[i].get());
+            deletedShapes.push_back(std::move(m_vShapes[i]));
+            m_vShapes.erase(m_vShapes.begin() + i);
+        } else {
+            ++i;
+            deletedShapes.push_back(nullptr);
         }
-        return false;
-    });
+    }
 
     auto itRemoveConnections = std::remove_if(m_vConnections.begin(), m_vConnections.end(), [&](const Connection& con) {
         return (set.find(con.out()) != set.end()) || (set.find(con.in()) != set.end());
     });
 
     m_vConnections.erase(itRemoveConnections, m_vConnections.end());
-    m_vShapes.erase(itRemoveShapes, m_vShapes.end());
 
     itRemoveConnections = std::remove_if(m_vConnections.begin(), m_vConnections.end(), [&](const Connection& con) {
         return con.isSelected();
     });
 
     m_vConnections.erase(itRemoveConnections, m_vConnections.end());
+
+    return std::make_tuple(std::move(deletedShapes), std::move(deletedCons));
 }
 
 } // namespace

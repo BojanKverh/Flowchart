@@ -13,6 +13,10 @@ class Connection
 {
 public:
     /**
+     * @brief Connection Default constructor
+     */
+    Connection();
+    /**
      * @brief Connection Constructor
      * @param out Pointer to the output shape
      * @param outIndex Index of the shape output

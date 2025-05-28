@@ -121,6 +121,11 @@ public:
     bool hasEnd() const;
 
     /**
+     * @brief restoreShapes Restores the shapes from given vector
+     * @param v Vector to restore shapes from
+     */
+    void restoreShapes(std::vector<std::unique_ptr<AbstractShape> > &v);
+    /**
      * @brief addShape Tries to append a new shape. This method is supposed to be called by QUndoStack only
      * @param shape Pointer to the shape
      * @return true, if the shape was added and false otherwise
@@ -137,6 +142,11 @@ public:
      * @param n Shape index
      */
     void selectShape(int n);
+    /**
+     * @brief restoreConnections Restores the connections
+     * @param v New vector of connection
+     */
+    void restoreConnections(const std::vector<Connection> v);
     /**
      * @brief addConnection Tries to append a new connection. This method is supposed to be called by QUndoStack only
      * @param con Reference to the connection
@@ -162,7 +172,7 @@ public:
     /**
      * @brief deleteSelected Deletes the selected shapes and connections. This method is supposed to be called by QUndoStack only
      */
-    void deleteSelected();
+    std::tuple<std::vector<std::unique_ptr<AbstractShape>>, std::vector<Connection>> deleteSelected();
 
 private:
     std::vector<std::unique_ptr<AbstractShape>> m_vShapes;

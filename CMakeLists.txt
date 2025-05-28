@@ -81,6 +81,7 @@ add_executable(${PROJECT_NAME}
     undo/deleteselected.cpp
     undo/editproperties.h
     undo/editproperties.cpp
+    edge.h
 
 )
 

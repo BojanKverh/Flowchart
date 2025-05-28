@@ -6,6 +6,7 @@
 
 #include "shapes/abstractshape.h"
 #include "connection.h"
+#include "edge.h"
 
 #include <QUndoStack>
 
@@ -84,10 +85,18 @@ public:
     /**
      * @brief findShape Finds the index of the shape, which contains the point pt
      * @param pt Point to look for
+     * @param extended If this is true, the search rectangle will be extended by a threshold
      * @return Index of the shape, which contains the point pt. If no such shape can be
      * found, -1 is returned
      */
-    int findShape(QPointF pt) const;
+    int findShape(QPointF pt, bool extended = false) const;
+    /**
+     * @brief findEdge Finds the edge the given point is on the i-th shape
+     * @param i index of the shape to check
+     * @param pt Point to check
+     * @return the edge found
+     */
+    data::Edge findEdge(int i, QPointF pt) const;
     /**
      * @brief findShape Returns index of the given shape. If no such shape can be found, it will return -1
      * @param shape Pointer to the shape

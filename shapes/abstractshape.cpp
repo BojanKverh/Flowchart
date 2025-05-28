@@ -7,8 +7,12 @@ void AbstractShape::moveCenter(QPointF pt)
     m_pt = QPointF(pt.x() - m_size.width() / 2, pt.y() - m_size.height() / 2);
 }
 
-bool AbstractShape::contains(QPointF pt, double f) const
+bool AbstractShape::contains(QPointF pt, bool extended, double f) const
 {
+    auto rect = scale(f);
+    if (extended == true)
+        rect.adjust(-5, -5, 5, 5);
+
     if (scale(f).contains(pt) == true)
         return true;
 

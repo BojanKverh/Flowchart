@@ -64,12 +64,38 @@ int Diagram::indexOf(AbstractShape* shape) const
         return -1;
 }
 
-int Diagram::findShape(QPointF pt) const
+int Diagram::findShape(QPointF pt, bool extended) const
 {
-    auto it = std::find_if(m_vShapes.begin(), m_vShapes.end(), [pt](const auto& shape) {
-        return shape->contains(pt);
+    auto it = std::find_if(m_vShapes.begin(), m_vShapes.end(), [pt, extended](const auto& shape) {
+        return shape->contains(pt, extended);
     });
     return (it == m_vShapes.end()? -1 : std::distance(m_vShapes.begin(), it));
+}
+
+data::Edge Diagram::findEdge(int i, QPointF pt) const
+{
+    QVector<QRectF> v;
+    const double size = 5;
+    const auto& shape = m_vShapes[i];
+    double x = shape->position().x();
+    double y = shape->position().y();
+    double w = shape->size().width();
+    double h = shape->size().height();
+    v << QRectF(x, y, 0, 0)
+      << QRectF(x + w, y, 0, 0)
+      << QRectF(x + w, y + h, 0, 0)
+      << QRectF(x, y + h, 0, 0)
+      << QRectF(x, y, w, 0)
+      << QRectF(x + w, y, 0, h)
+      << QRectF(x, y + h, w, 0)
+      << QRectF(x, y, 0, h);
+
+    for (int i = 0; i < v.size(); ++i) {
+        if (v[i].adjusted(-size, -size, size, size).contains(pt) == true)
+            return static_cast<data::Edge>(i + 1);
+    }
+
+    return data::Edge::eNone;
 }
 
 int Diagram::findShape(data::AbstractShape* shape) const

@@ -80,7 +80,6 @@ void DrawArea::mouseMoveEvent(QMouseEvent* pME)
         if (m_conStart.isEnd() == true) {
 
         } else {
-            //m_diagram.moveSelected(pt - m_drag.value());
             auto set = m_diagram.selectedShapes();
             for (auto it = set.begin(); it != set.end(); ++it) {
                 auto* com = new undo::MoveShape(m_diagram, *it, m_diagram.shapes()[*it]->position(), pt - m_drag.value());
@@ -96,8 +95,38 @@ void DrawArea::mouseMoveEvent(QMouseEvent* pME)
     auto con = m_diagram.findConnector(pt);
     if (con.isEnd() == true)
         setCursor(Qt::CursorShape::PointingHandCursor);
-    else
-        setCursor(Qt::CursorShape::ArrowCursor);
+    else {
+        int i = m_diagram.findShape(pt, true);
+        if (i < 0) {
+            setCursor(Qt::CursorShape::ArrowCursor);
+            return;
+        }
+
+        Qt::CursorShape shape = Qt::CursorShape::ArrowCursor;
+        auto edge = m_diagram.findEdge(i, pt);
+        switch (edge) {
+        case data::Edge::eNone:
+            break;
+        case data::Edge::eTopLeft:
+        case data::Edge::eBottomRight:
+            shape = Qt::CursorShape::SizeFDiagCursor;
+            break;
+        case data::Edge::eTopRight:
+        case data::Edge::eBottomLeft:
+            shape = Qt::CursorShape::SizeBDiagCursor;
+            break;
+        case data::Edge::eTop:
+        case data::Edge::eBottom:
+            shape = Qt::CursorShape::SizeVerCursor;
+            break;
+        case data::Edge::eLeft:
+        case data::Edge::eRight:
+            shape = Qt::CursorShape::SizeHorCursor;
+            break;
+        }
+
+        setCursor(shape);
+    }
 }
 
 void DrawArea::mouseReleaseEvent(QMouseEvent* pME)

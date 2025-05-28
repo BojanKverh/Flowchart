@@ -63,23 +63,23 @@ void WindowMain::buildUI()
 
 void WindowMain::buildControl()
 {
-    auto* sc = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z), this);
+    auto* sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Z), this);
     sc->setContext(Qt::ApplicationShortcut);
     connect(sc, &QShortcut::activated, m_pCanvas, &DrawArea::undo);
 
-    sc = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Y), this);
+    sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Y), this);
     sc->setContext(Qt::ApplicationShortcut);
     connect(sc, &QShortcut::activated, m_pCanvas, &DrawArea::redo);
 
-    sc = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_O), this);
+    sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_O), this);
     sc->setContext(Qt::ApplicationShortcut);
     connect(sc, &QShortcut::activated, this, &WindowMain::load);
 
-    sc = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S), this);
+    sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_S), this);
     sc->setContext(Qt::ApplicationShortcut);
     connect(sc, &QShortcut::activated, this, &WindowMain::save);
 
-    sc = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this);
+    sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Q), this);
     sc->setContext(Qt::ApplicationShortcut);
     connect(sc, &QShortcut::activated, this, &WindowMain::quit);
 }

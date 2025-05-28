@@ -112,10 +112,11 @@ public:
     /**
      * @brief contains Checks if this shape contains point pt
      * @param pt Point to check for
+     * @param extended If this is true, the search area will be extended by the threshold
      * @param f Scale factor
      * @return true, if the shape contains pt and false otherwise
      */
-    bool contains(QPointF pt, double f = 1.0) const;
+    bool contains(QPointF pt, bool extended = false, double f = 1.0) const;
     /**
      * @brief isOnInput Returns true, if the point is on input connector
      * @param pt Point to check

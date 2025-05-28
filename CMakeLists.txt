@@ -82,6 +82,8 @@ add_executable(${PROJECT_NAME}
     undo/editproperties.h
     undo/editproperties.cpp
     edge.h
+    undo/resizeshape.h
+    undo/resizeshape.cpp
 
 )
 

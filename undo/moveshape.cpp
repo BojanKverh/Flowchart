@@ -8,12 +8,26 @@ MoveShape::MoveShape(data::Diagram& diagram, int index, QPointF oldPos, QPointF 
 
 void MoveShape::undo()
 {
-    m_diagram.shapes()[m_index]->move(m_oldPt);
+    auto* shape = m_diagram.shapes().at(m_index).get();
+    shape->move(m_oldPt);
+    auto& cons = m_diagram.connections();
+    std::for_each(cons.begin(), cons.end(), [this, shape](auto& con)
+    {
+        if ((con.out() == shape) || (con.in() == shape))
+            con.update();
+    });
 }
 
 void MoveShape::redo()
 {
-    m_diagram.shapes()[m_index]->move(m_oldPt + m_diffPt);
+    auto* shape = m_diagram.shapes().at(m_index).get();
+    shape->move(m_oldPt + m_diffPt);
+    auto& cons = m_diagram.connections();
+    std::for_each(cons.begin(), cons.end(), [this, shape](auto& con)
+    {
+        if ((con.out() == shape) || (con.in() == shape))
+            con.update();
+    });
 }
 
 bool MoveShape::mergeWith(const QUndoCommand* com)

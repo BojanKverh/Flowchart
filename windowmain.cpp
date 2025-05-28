@@ -8,6 +8,7 @@
 #include <QMenuBar>
 #include <QApplication>
 #include <QFileDialog>
+#include <QShortcut>
 
 #include "scrollarea.h"
 #include "drawarea.h"
@@ -19,6 +20,7 @@ WindowMain::WindowMain(QWidget *parent)
     setMinimumSize(800, 600);
 
     buildUI();
+    buildControl();
 }
 
 WindowMain::~WindowMain() {}
@@ -45,18 +47,41 @@ void WindowMain::buildUI()
 
     auto* menuBar = new QMenuBar;
     auto* pMenu = new QMenu(tr("File"));
-    pMenu->addAction(tr("Load"), this, &WindowMain::load);
-    pMenu->addAction(tr("Save"), this, &WindowMain::save);
+    pMenu->addAction(tr("Load (Ctrl+O)"), this, &WindowMain::load);
+    pMenu->addAction(tr("Save (Ctrl+S)"), this, &WindowMain::save);
     pMenu->addSeparator();
-    pMenu->addAction(tr("Quit"), this, &WindowMain::quit);
+    pMenu->addAction(tr("Quit (Ctrl+Q)"), this, &WindowMain::quit);
     menuBar->addMenu(pMenu);
 
     pMenu = new QMenu(tr("Edit"));
-    pMenu->addAction(tr("Undo"), m_pCanvas, &DrawArea::undo);
-    pMenu->addAction(tr("Redo"), m_pCanvas, &DrawArea::redo);
+    pMenu->addAction(tr("Undo (Ctrl+Z)"), m_pCanvas, &DrawArea::undo);
+    pMenu->addAction(tr("Redo (Ctrl+Y)"), m_pCanvas, &DrawArea::redo);
     menuBar->addMenu(pMenu);
 
     setMenuBar(menuBar);
+}
+
+void WindowMain::buildControl()
+{
+    auto* sc = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z), this);
+    sc->setContext(Qt::ApplicationShortcut);
+    connect(sc, &QShortcut::activated, m_pCanvas, &DrawArea::undo);
+
+    sc = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Y), this);
+    sc->setContext(Qt::ApplicationShortcut);
+    connect(sc, &QShortcut::activated, m_pCanvas, &DrawArea::redo);
+
+    sc = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_O), this);
+    sc->setContext(Qt::ApplicationShortcut);
+    connect(sc, &QShortcut::activated, this, &WindowMain::load);
+
+    sc = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S), this);
+    sc->setContext(Qt::ApplicationShortcut);
+    connect(sc, &QShortcut::activated, this, &WindowMain::save);
+
+    sc = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this);
+    sc->setContext(Qt::ApplicationShortcut);
+    connect(sc, &QShortcut::activated, this, &WindowMain::quit);
 }
 
 void WindowMain::addButton(QString icon, QString text, data::ShapeType shape)

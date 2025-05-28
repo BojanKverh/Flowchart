@@ -32,6 +32,10 @@ private:
      * @brief buildUI Builds the entire UI
      */
     void buildUI();
+    /**
+     * @brief buildControl Builds the shortcuts
+     */
+    void buildControl();
 
     /**
      * @brief addButton Adds the toolbutton to the toolbar

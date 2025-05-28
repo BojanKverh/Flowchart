@@ -2,8 +2,6 @@
 
 #include "../shapes/shapefactory.h"
 
-#include <QDebug>
-
 namespace undo {
 
 void AddShape::undo()

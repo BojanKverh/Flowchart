@@ -79,6 +79,8 @@ add_executable(${PROJECT_NAME}
     undo/undoid.h
     undo/deleteselected.h
     undo/deleteselected.cpp
+    undo/editproperties.h
+    undo/editproperties.cpp
 
 )
 

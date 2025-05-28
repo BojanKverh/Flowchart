@@ -7,6 +7,7 @@
 #include "undo/addconnection.h"
 #include "undo/moveshape.h"
 #include "undo/deleteselected.h"
+#include "undo/editproperties.h"
 
 #include <QPaintEvent>
 #include <QPainter>
@@ -188,18 +189,24 @@ void DrawArea::editProperties(const QPointF& pt)
 {
     auto index = m_diagram.findShape(pt);
     if (index >= 0) {
+        auto* com = new undo::EditProperties(m_diagram, index);
         m_diagram.selectShape(index);
-        update();
+        com->recordSelections();
         auto* shape = m_diagram.shapes()[index].get();
         DialogShape dlg(shape, this);
         if (dlg.exec() == true) {
             shape->setBackgroundColor(dlg.backgroundColor());
             shape->setTextColor(dlg.textColor());
             shape->setText(dlg.text());
+            com->recordProperties();
+            m_diagram.addOperation(com);
+        }   else {
+            delete com;
         }
+
+        update();
         return;
     }
-    update();
 }
 
 void DrawArea::showContextMenu(const QPoint& pt)

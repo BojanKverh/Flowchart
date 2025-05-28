@@ -2,6 +2,8 @@
 
 #include <QUndoCommand>
 
+#include "undoid.h"
+
 #include <unordered_set>
 
 #include "../diagram.h"
@@ -19,6 +21,12 @@ public:
      * @param diagram Reference to the diagram object
      */
     SwitchSelection(data::Diagram& diagram);
+    /**
+     * @brief id Returns the command id
+     * @return command id
+     */
+    int id() const override { return ciSwitchSelection; }
+
     /**
      * @brief recordSelections Records the selected shapes and connections into m_newShapes and
      * m_newCons set
@@ -39,6 +47,9 @@ public:
      * @brief redo Redoes the command
      */
     void redo() override;
+
+private:
+    bool equal(const std::unordered_set<int>& set1, const std::unordered_set<int>& set2) const;
 
 private:
     data::Diagram& m_diagram;

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "switchselection.h"
+#include "undoid.h"
+
 #include "../diagram.h"
 #include "../erroremitter.h"
 
@@ -30,6 +32,11 @@ public:
         m_index = m_diagram.connections().size();
     }
 
+    /**
+     * @brief id Returns the command id
+     * @return command id
+     */
+    int id() const override { return ciAddConnection; }
     /**
      * @brief undo Undoes the command
      */

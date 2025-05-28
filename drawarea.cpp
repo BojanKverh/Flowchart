@@ -48,7 +48,15 @@ void DrawArea::mousePressEvent(QMouseEvent* pME)
         m_conStart = m_diagram.findConnector(m_drag.value());
 
         auto* com = new undo::SwitchSelection(m_diagram);
-        com->recordSelections({iS}, {iC});
+        std::unordered_set<int> shapes;
+        std::unordered_set<int> cons;
+
+        if (iS >= 0)
+            shapes.insert(iS);
+        if (iC >= 0)
+            cons.insert(iC);
+        com->recordSelections(shapes, cons);
+
         m_diagram.addOperation(com);
         update();
     }

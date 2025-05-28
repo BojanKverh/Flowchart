@@ -2,6 +2,8 @@
 
 #include <QUndoCommand>
 
+#include "undoid.h"
+
 #include "../diagram.h"
 
 namespace undo {
@@ -20,6 +22,12 @@ public:
      * @param diffPos Difference to the new position
      */
     MoveShape(data::Diagram& diagram, int index, QPointF oldPos, QPointF diffPos);
+
+    /**
+     * @brief id Returns the command id
+     * @return command id
+     */
+    int id() const override { return ciMoveShape; }
 
     /**
      * @brief index Returns the shape index

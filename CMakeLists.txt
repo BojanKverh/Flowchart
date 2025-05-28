@@ -76,6 +76,7 @@ add_executable(${PROJECT_NAME}
     undo/switchselection.cpp
     undo/moveshape.h
     undo/moveshape.cpp
+    undo/undoid.h
 
 )
 

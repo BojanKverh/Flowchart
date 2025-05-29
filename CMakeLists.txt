@@ -84,6 +84,9 @@ add_executable(${PROJECT_NAME}
     edge.h
     undo/resizeshape.h
     undo/resizeshape.cpp
+    undo/manipulateshape.h
+    undo/manipulateshape.cpp
+    edge.cpp
 
 )
 

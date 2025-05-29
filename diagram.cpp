@@ -74,6 +74,9 @@ int Diagram::findShape(QPointF pt, bool extended) const
 
 data::Edge Diagram::findEdge(int i, QPointF pt) const
 {
+    if (i < 0)
+        return Edge::eNone;
+
     QVector<QRectF> v;
     const double size = 5;
     const auto& shape = m_vShapes[i];
@@ -115,17 +118,18 @@ int Diagram::findConnection(QPointF pt) const
     return (it == m_vConnections.end()? -1 : std::distance(m_vConnections.begin(), it));
 }
 
-Connection Diagram::findConnector(QPointF pt) const
+Connection Diagram::findConnector(int index, QPointF pt) const
 {
-    for (const auto& shape : m_vShapes) {
-        int outIndex = shape->findOutput(pt);
-        if (outIndex >= 0)
-            return Connection(shape.get(), outIndex, nullptr);
-        if (shape->isOnInput(pt) == true)
-            return Connection(nullptr, -1, shape.get());
-    }
+    if (index < 0)
+        return Connection();
 
-    return Connection(nullptr, -1, nullptr);
+    auto* shape = m_vShapes[index].get();
+    int outIndex = shape->findOutput(pt);
+    if (outIndex >= 0)
+        return Connection(shape, outIndex, nullptr);
+    if (shape->isOnInput(pt) == true)
+        return Connection(nullptr, -1, shape);
+    return Connection();
 }
 
 bool Diagram::hasStart() const

@@ -34,6 +34,12 @@ public:
      */
     AbstractShape* out() const { return m_out; }
     /**
+     * @brief setOut Sets the output connector and its index
+     * @param out Point to the shape containing output connector
+     * @param index Output connector index
+     */
+    void setOut(AbstractShape* out, int index);
+    /**
      * @brief outIndex Returns the output connector index
      * @return output connector index
      */

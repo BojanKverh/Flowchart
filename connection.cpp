@@ -13,6 +13,12 @@ Connection::Connection(AbstractShape* out, int outIndex, AbstractShape* in) :
     m_out(out), m_outIndex(outIndex), m_in(in)
 {}
 
+void Connection::setOut(AbstractShape* out, int index)
+{
+    m_out = out;
+    m_outIndex = index;
+}
+
 bool Connection::contains(AbstractShape* end) const
 {
     return (m_out == end) || (m_in == end);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QUndoCommand>
+#include "manipulateshape.h"
 
 #include "undoid.h"
 
@@ -11,7 +11,7 @@ namespace undo {
 /**
  * @brief The MoveShape class This class represents the move shape command
  */
-class MoveShape : public QUndoCommand
+class MoveShape : public ManipulateShape
 {
 public:
     /**
@@ -29,11 +29,6 @@ public:
      */
     int id() const override { return ciMoveShape; }
 
-    /**
-     * @brief index Returns the shape index
-     * @return Shape index
-     */
-    int index() const { return m_index; }
     /**
      * @brief pos Returns the difference between old and new point
      * @return difference between old and new point
@@ -56,8 +51,6 @@ public:
     bool mergeWith(const QUndoCommand* com) override;
 
 private:
-    data::Diagram& m_diagram;
-    int m_index;
     QPointF m_oldPt;
     QPointF m_diffPt;
 };

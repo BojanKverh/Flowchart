@@ -112,12 +112,13 @@ public:
     int findConnection(QPointF pt) const;
     /**
      * @brief isOnConnector checks if point is on any connector
+     * @param index shape to check
      * @param pt Point to check
      * @return object containing pointer to the output shape, output index and
      * pointer to the input shape. At least on of the returned pointers is nullptr.
      * If both are nullptr, means that the point is not on any connector
      */
-    Connection findConnector(QPointF pt) const;
+    Connection findConnector(int index, QPointF pt) const;
     /**
      * @brief hasStart Return true, if the vector of shapes contains the Start shape
      * @return true, if the vector of shapes contains the Start shape and false otherwise

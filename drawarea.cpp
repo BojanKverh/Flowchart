@@ -8,6 +8,7 @@
 #include "undo/moveshape.h"
 #include "undo/deleteselected.h"
 #include "undo/editproperties.h"
+#include "undo/resizeshape.h"
 
 #include <QPaintEvent>
 #include <QPainter>
@@ -43,11 +44,8 @@ void DrawArea::mousePressEvent(QMouseEvent* pME)
 {
     if (pME->button() == Qt::LeftButton) {
         auto pt = pME->position();
-        auto iS = m_diagram.findShape(pt);
+        auto iS = m_diagram.findShape(pt, true);
         auto iC = (iS < 0? m_diagram.findConnection(pt) : -1);
-
-        m_drag = pt;
-        m_conStart = m_diagram.findConnector(m_drag.value());
 
         auto* com = new undo::SwitchSelection(m_diagram);
         std::unordered_set<int> shapes;
@@ -60,6 +58,17 @@ void DrawArea::mousePressEvent(QMouseEvent* pME)
         com->recordSelections(shapes, cons);
 
         m_diagram.addOperation(com);
+
+        m_drag = pt;
+
+        if (checkConnect(iS, pt) == true) {
+            m_mode = MoveMode::emmConnect;
+        } else if (checkResize(iS, pt) == true) {
+            m_resize = iS;
+            m_mode = MoveMode::emmResize;
+        } else if (checkMove(iS) == true) {
+            m_mode = MoveMode::emmMove;
+        }
         update();
     }
 }
@@ -75,56 +84,35 @@ void DrawArea::mouseMoveEvent(QMouseEvent* pME)
 {
     auto pt = pME->position();
 
-    if (m_drag.has_value() == true) {
+    switch (m_mode) {
+    case MoveMode::emmMove:
+        handleMove(pt);
+        break;
+    case MoveMode::emmResize:
+        handleResize(pt);
+        break;
 
-        if (m_conStart.isEnd() == true) {
-
-        } else {
-            auto set = m_diagram.selectedShapes();
-            for (auto it = set.begin(); it != set.end(); ++it) {
-                auto* com = new undo::MoveShape(m_diagram, *it, m_diagram.shapes()[*it]->position(), pt - m_drag.value());
-                m_diagram.addOperation(com);
-            }
-        }
-        update();
-
-        m_drag = pt;
-        return;
+    default:
+        break;
     }
 
-    auto con = m_diagram.findConnector(pt);
-    if (con.isEnd() == true)
-        setCursor(Qt::CursorShape::PointingHandCursor);
-    else {
-        int i = m_diagram.findShape(pt, true);
-        if (i < 0) {
+    if (m_mode != MoveMode::emmNone) {
+        setCursor(Qt::CursorShape::ClosedHandCursor);
+    }   else {
+        int index = m_diagram.findShape(pt);
+        if (index < 0) {
             setCursor(Qt::CursorShape::ArrowCursor);
             return;
         }
 
-        Qt::CursorShape shape = Qt::CursorShape::ArrowCursor;
-        auto edge = m_diagram.findEdge(i, pt);
-        switch (edge) {
-        case data::Edge::eNone:
-            break;
-        case data::Edge::eTopLeft:
-        case data::Edge::eBottomRight:
-            shape = Qt::CursorShape::SizeFDiagCursor;
-            break;
-        case data::Edge::eTopRight:
-        case data::Edge::eBottomLeft:
-            shape = Qt::CursorShape::SizeBDiagCursor;
-            break;
-        case data::Edge::eTop:
-        case data::Edge::eBottom:
-            shape = Qt::CursorShape::SizeVerCursor;
-            break;
-        case data::Edge::eLeft:
-        case data::Edge::eRight:
-            shape = Qt::CursorShape::SizeHorCursor;
-            break;
+        auto con = m_diagram.findConnector(index, pt);
+        if (con.isEnd() == true) {
+            setCursor(Qt::CursorShape::PointingHandCursor);
+            return;
         }
 
+        auto edge = m_diagram.findEdge(index, pt);
+        auto shape = data::EdgeHandler::shape(edge);
         setCursor(shape);
     }
 }
@@ -133,25 +121,20 @@ void DrawArea::mouseReleaseEvent(QMouseEvent* pME)
 {
     if (pME->button() == Qt::LeftButton) {
         auto pt = pME->position();
-        auto con = m_diagram.findConnector(pt);
-        if ((con.isEnd() == false) && (m_conStart.isOutput() == true)) {
-            int i = m_diagram.findShape(pt);
-            if (i >= 0)
-                con.setIn(m_diagram.shapes().at(i).get());
-        }
 
-        if ((m_conStart.isEnd() == true) && (con.isEnd() == true)) {
-            m_conStart.addEnd(con.isOutput() == true? con.out() : con.in(), con.outIndex());
-            auto* com = new undo::AddConnection(
-                &m_emitter, m_diagram, m_diagram.findShape(m_conStart.out()), m_conStart.outIndex(), m_diagram.findShape(m_conStart.in()));
-            m_diagram.addOperation(com);
-            update();
+        switch (m_mode) {
+        case DrawArea::MoveMode::emmConnect:
+            handleConnect(pt);
+            break;
+        default:
+            break;
         }
-
-        m_drag.reset();
-        m_conStart = data::Connection(nullptr, -1, nullptr);
     }
 
+    m_drag.reset();
+    m_mode = MoveMode::emmNone;
+    m_edge = data::Edge::eNone;
+    m_resize = -1;
     QWidget::mouseReleaseEvent(pME);
 }
 
@@ -285,4 +268,77 @@ void DrawArea::handleError(data::Diagram::Error error)
 
     if (errMsg.isEmpty() == false)
         QMessageBox::critical(this, tr("Shape adding failed"), errMsg);
+}
+
+bool DrawArea::checkMove(int index) const
+{
+    return (index >= 0);
+}
+
+bool DrawArea::checkConnect(int index, QPointF pt)
+{
+    m_conStart = m_diagram.findConnector(index, pt);
+    return m_conStart.isEnd();
+}
+
+bool DrawArea::checkResize(int index, QPointF pt)
+{
+    m_edge = m_diagram.findEdge(index, pt);
+    return m_edge != data::Edge::eNone;
+}
+
+void DrawArea::handleMove(QPointF pt)
+{
+    auto set = m_diagram.selectedShapes();
+    for (auto it = set.begin(); it != set.end(); ++it) {
+        auto* com = new undo::MoveShape(m_diagram, *it, m_diagram.shapes()[*it]->position(), pt - m_drag.value());
+        m_diagram.addOperation(com);
+    }
+    update();
+    m_drag = pt;
+}
+
+void DrawArea::handleConnect(QPointF pt)
+{
+    auto index = m_diagram.findShape(pt, true);
+    if (index < 0)
+        return;
+
+    if (m_conStart.isOutput() == true) {
+        m_conStart.setIn(m_diagram.shapes().at(index).get());
+    }   else {
+        auto con = m_diagram.findConnector(index, pt);
+        m_conStart.setOut(con.out(), con.outIndex());
+    }
+
+    qDebug() << "handleConnect" << m_conStart.isValid();
+
+    if (m_conStart.isValid() == false)
+        return;
+
+    auto* com = new undo::AddConnection(
+        &m_emitter,
+        m_diagram,
+        m_diagram.findShape(m_conStart.out()),
+        m_conStart.outIndex(),
+        m_diagram.findShape(m_conStart.in())
+        );
+    m_diagram.addOperation(com);
+    update();
+    m_conStart = data::Connection();
+}
+
+void DrawArea::handleResize(QPointF pt)
+{
+    if (m_resize < 0)
+        return;
+    auto* shape = m_diagram.shapes().at(m_resize).get();
+
+    double dX, dY, dW, dH;
+    std::tie(dX, dY, dW, dH) = data::EdgeHandler::move(m_edge, m_drag.value(), pt);
+
+    auto* com = new undo::ResizeShape(m_diagram, m_resize, QRectF(shape->position(), shape->size()), dX, dY, dW, dH);
+    m_diagram.addOperation(com);
+    update();
+    m_drag = pt;
 }

@@ -87,6 +87,8 @@ add_executable(${PROJECT_NAME}
     undo/manipulateshape.h
     undo/manipulateshape.cpp
     edge.cpp
+    lastfileshandler.h
+    lastfileshandler.cpp
 
 )
 

@@ -3,6 +3,7 @@
 #include <QMainWindow>
 
 #include "shapes/shapetype.h"
+#include "lastfileshandler.h"
 
 class QToolBar;
 
@@ -60,9 +61,23 @@ private:
      * @brief quit Quits the application
      */
     void quit();
+    /**
+     * @brief updateLastFiles Updates the last files
+     */
+    void updateLastFiles();
+    /**
+     * @brief load Loads the file with given name
+     * @param file File name to load
+     */
+    void load(const QString& file);
 
 private:
     QToolBar* m_ptb;
     ScrollArea* m_pArea;
     DrawArea* m_pCanvas;
+    LastFilesHandler* m_lastFiles;
+
+    QMenu* m_fileMenu;
+    QAction* m_lfStart;
+    QAction* m_lfEnd;
 };

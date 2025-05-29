@@ -262,9 +262,9 @@ void WindowMain::newTab()
     auto* area = new ScrollArea;
     auto* canvas = new DrawArea;
     area->setWidget(canvas);
-    QFileInfo fi(QString::fromStdString(canvas->diagram().name()));
-    m_pCentral->addTab(area, fi.fileName());
+    m_pCentral->addTab(area, "");
     m_pCentral->setCurrentIndex(m_pCentral->count() - 1);
+    updateName();
 }
 
 void WindowMain::updateName()

@@ -44,7 +44,10 @@ private:
      * @param shape Shape to be associated with the button
      */
     void addButton(QString icon, QString text, data::ShapeType shape);
-
+    /**
+     * @brief newDiagram Creates a new diagram
+     */
+    void newDiagram();
     /**
      * @brief load Asks the user to select a file to load and loads it
      */

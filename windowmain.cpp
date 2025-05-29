@@ -47,6 +47,8 @@ void WindowMain::buildUI()
 
     auto* menuBar = new QMenuBar;
     auto* pMenu = new QMenu(tr("File"));
+    pMenu->addAction(tr("New (Ctrl+N"), this, &WindowMain::newDiagram);
+    pMenu->addSeparator();
     pMenu->addAction(tr("Load (Ctrl+O)"), this, &WindowMain::load);
     pMenu->addAction(tr("Save (Ctrl+S)"), this, &WindowMain::save);
     pMenu->addSeparator();
@@ -105,6 +107,12 @@ void WindowMain::addButton(QString icon, QString text, data::ShapeType shape)
     });
 
     m_ptb->addWidget(ptb);
+}
+
+void WindowMain::newDiagram()
+{
+    m_pCanvas->diagram().clear();
+    m_pCanvas->update();
 }
 
 void WindowMain::load()

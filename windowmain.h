@@ -11,6 +11,10 @@ class QTabWidget;
 class ScrollArea;
 class DrawArea;
 
+namespace data {
+class Diagram;
+}
+
 /**
  * @brief The WindowMain class This is the application main window
  */
@@ -90,6 +94,14 @@ private:
      */
     void redo();
     /**
+     * @brief copy Copies the content of the current diagram
+     */
+    void copy();
+    /**
+     * @brief paste Pastes the copied content into the current diagram
+     */
+    void paste();
+    /**
      * @brief newTab Opens a new tab
      */
     void newTab();
@@ -106,4 +118,6 @@ private:
     QMenu* m_fileMenu;
     QAction* m_lfStart;
     QAction* m_lfEnd;
+
+    std::unique_ptr<data::Diagram> m_copy;
 };

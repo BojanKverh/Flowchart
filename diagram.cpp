@@ -1,5 +1,7 @@
 #include "diagram.h"
 
+#include "shapes/shapefactory.h"
+
 #include <algorithm>
 #include <unordered_set>
 
@@ -10,6 +12,19 @@ namespace data {
 Diagram::Diagram()
 {
     m_name = "";
+}
+
+Diagram::Diagram(const Diagram& diagram)
+{
+    for (const auto& shape : diagram.shapes()) {
+        addShape(ShapeFactory::copy(shape.get()));
+    }
+
+    for (const auto& con : diagram.connections()) {
+        auto out = diagram.findShape(con.out());
+        auto in = diagram.findShape(con.in());
+        Connection copy(m_vShapes[out].get(), con.outIndex(), m_vShapes[in].get());
+    }
 }
 
 void Diagram::clear()

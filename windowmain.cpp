@@ -74,6 +74,9 @@ void WindowMain::buildUI()
     auto* pMenu = new QMenu(tr("Edit"));
     pMenu->addAction(tr("Undo (Ctrl+Z)"), this, &WindowMain::undo);
     pMenu->addAction(tr("Redo (Ctrl+Y)"), this, &WindowMain::redo);
+    pMenu->addSeparator();
+    pMenu->addAction(tr("Copy (Ctrl+C)"), this, &WindowMain::copy);
+    pMenu->addAction(tr("Paste (Ctrl+V)"), this, &WindowMain::paste);
     menuBar->addMenu(pMenu);
 
     setMenuBar(menuBar);
@@ -83,13 +86,9 @@ void WindowMain::buildUI()
 
 void WindowMain::buildControl()
 {
-    auto* sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Z), this);
+    auto* sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_N), this);
     sc->setContext(Qt::ApplicationShortcut);
-    connect(sc, &QShortcut::activated, this, &WindowMain::undo);
-
-    sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Y), this);
-    sc->setContext(Qt::ApplicationShortcut);
-    connect(sc, &QShortcut::activated, this, &WindowMain::redo);
+    connect(sc, &QShortcut::activated, this, &WindowMain::newDiagram);
 
     sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_O), this);
     sc->setContext(Qt::ApplicationShortcut);
@@ -106,6 +105,23 @@ void WindowMain::buildControl()
     sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Q), this);
     sc->setContext(Qt::ApplicationShortcut);
     connect(sc, &QShortcut::activated, this, &WindowMain::quit);
+
+    sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Z), this);
+    sc->setContext(Qt::ApplicationShortcut);
+    connect(sc, &QShortcut::activated, this, &WindowMain::undo);
+
+    sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Y), this);
+    sc->setContext(Qt::ApplicationShortcut);
+    connect(sc, &QShortcut::activated, this, &WindowMain::redo);
+
+    sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_C), this);
+    sc->setContext(Qt::ApplicationShortcut);
+    connect(sc, &QShortcut::activated, this, &WindowMain::copy);
+
+    sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_V), this);
+    sc->setContext(Qt::ApplicationShortcut);
+    connect(sc, &QShortcut::activated, this, &WindowMain::paste);
+
 }
 
 void WindowMain::addButton(QString icon, QString text, data::ShapeType shape)
@@ -252,6 +268,20 @@ void WindowMain::undo()
 void WindowMain::redo()
 {
     current()->redo();
+}
+
+void WindowMain::copy()
+{
+    m_copy = std::make_unique<data::Diagram>(current()->diagram());
+    qDebug() << "COPY";
+}
+
+void WindowMain::paste()
+{
+    if (m_copy == nullptr)
+        return;
+
+    qDebug() << "PASTE" << m_copy->shapes().size();
 }
 
 void WindowMain::newTab()

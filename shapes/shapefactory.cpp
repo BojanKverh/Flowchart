@@ -31,4 +31,18 @@ std::unique_ptr<data::AbstractShape> ShapeFactory::shape(int type)
     }
 }
 
+std::unique_ptr<data::AbstractShape> ShapeFactory::copy(AbstractShape* shape)
+{
+    auto copy = ShapeFactory::shape(static_cast<int>(shape->type()));
+
+    copy->move(shape->position());
+    copy->resize(shape->size());
+    copy->setBackgroundColor(shape->backgroundColor());
+    copy->setTextColor(shape->textColor());
+    copy->setText(shape->text());
+    copy->setSelected(shape->isSelected());
+
+    return copy;
+}
+
 } // namespace

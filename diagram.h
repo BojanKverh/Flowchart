@@ -29,6 +29,11 @@ public:
      */
     Diagram();
     /**
+     * @brief Diagram Copy constructor
+     * @param diagram Object from which the copy will be made
+     */
+    Diagram(const Diagram& diagram);
+    /**
      * @brief clear Clears all the diagram data
      */
     void clear();

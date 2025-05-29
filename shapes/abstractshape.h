@@ -42,6 +42,11 @@ public:
      */
     QSizeF size() const { return m_size; }
     /**
+     * @brief rect Returns the bounding rectangle for this shape
+     * @return bounding rectangle for this shape
+     */
+    QRectF rect() const { return QRectF(m_pt, m_size); }
+    /**
      * @brief backgroundColor Returns the background color
      * @return background color
      */

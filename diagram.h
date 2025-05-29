@@ -76,6 +76,12 @@ public:
      */
     std::unordered_set<int> selectedConnections() const;
     /**
+     * @brief inside Returns indices of all the elements inside the given rectangle
+     * @param rect Bounding rectangle
+     * @return returns the tuple in format <shapesInsideIndices, connectionsInsideIndices>
+     */
+    std::tuple<std::unordered_set<int>, std::unordered_set<int>> inside(QRectF rect) const;
+    /**
      * @brief indexOf Returns the index of given shape in the vector of shapes
      * @param shape Pointer to the shape to find
      * @return Index of the given shape in the vector of shapes. If no such shape

@@ -61,13 +61,15 @@ void DrawArea::mousePressEvent(QMouseEvent* pME)
 
         m_drag = pt;
 
-        if (checkConnect(iS, pt) == true) {
+        if (initConnect(iS, pt) == true) {
             m_mode = MoveMode::emmConnect;
-        } else if (checkResize(iS, pt) == true) {
+        } else if (initResize(iS, pt) == true) {
             m_resize = iS;
             m_mode = MoveMode::emmResize;
-        } else if (checkMove(iS) == true) {
+        } else if (initMove(iS) == true) {
             m_mode = MoveMode::emmMove;
+        } else if (initSelect(pt) == true) {
+            m_mode = MoveMode::emmSelect;
         }
         update();
     }
@@ -90,6 +92,9 @@ void DrawArea::mouseMoveEvent(QMouseEvent* pME)
         break;
     case MoveMode::emmResize:
         handleResize(pt);
+        break;
+    case MoveMode::emmSelect:
+        handleSelect(pt);
         break;
 
     default:
@@ -124,18 +129,24 @@ void DrawArea::mouseReleaseEvent(QMouseEvent* pME)
 
         switch (m_mode) {
         case DrawArea::MoveMode::emmConnect:
-            handleConnect(pt);
+            finishConnect(pt);
             break;
+        case DrawArea::MoveMode::emmSelect:
+            finishSelect(pt);
+            break;
+
         default:
             break;
         }
     }
 
     m_drag.reset();
+    m_rectSelect.reset();
     m_mode = MoveMode::emmNone;
     m_edge = data::Edge::eNone;
     m_resize = -1;
     QWidget::mouseReleaseEvent(pME);
+    update();
 }
 
 void DrawArea::keyPressEvent(QKeyEvent* pKE)
@@ -176,6 +187,15 @@ void DrawArea::paintEvent(QPaintEvent* pPE)
     for (const auto& shape : vShapes) {
         shape->draw(P);
     }
+
+    if (m_rectSelect.has_value() == true) {
+        P.setPen(palette().color(QPalette::ColorGroup::Active, QPalette::ColorRole::Text));
+        auto color = palette().color(QPalette::ColorGroup::Active, QPalette::ColorRole::Highlight);
+        color.setAlpha(64);
+        P.setBrush(color);
+        P.drawRect(m_rectSelect.value());
+    }
+
 }
 
 void DrawArea::dragEnterEvent(QDragEnterEvent* pDEE)
@@ -270,21 +290,26 @@ void DrawArea::handleError(data::Diagram::Error error)
         QMessageBox::critical(this, tr("Shape adding failed"), errMsg);
 }
 
-bool DrawArea::checkMove(int index) const
+bool DrawArea::initMove(int index) const
 {
     return (index >= 0);
 }
 
-bool DrawArea::checkConnect(int index, QPointF pt)
+bool DrawArea::initConnect(int index, QPointF pt)
 {
     m_conStart = m_diagram.findConnector(index, pt);
     return m_conStart.isEnd();
 }
 
-bool DrawArea::checkResize(int index, QPointF pt)
+bool DrawArea::initResize(int index, QPointF pt)
 {
     m_edge = m_diagram.findEdge(index, pt);
     return m_edge != data::Edge::eNone;
+}
+
+bool DrawArea::initSelect(QPointF pt)
+{
+    return true;
 }
 
 void DrawArea::handleMove(QPointF pt)
@@ -298,7 +323,31 @@ void DrawArea::handleMove(QPointF pt)
     m_drag = pt;
 }
 
-void DrawArea::handleConnect(QPointF pt)
+void DrawArea::handleResize(QPointF pt)
+{
+    if (m_resize < 0)
+        return;
+    auto* shape = m_diagram.shapes().at(m_resize).get();
+
+    double dX, dY, dW, dH;
+    std::tie(dX, dY, dW, dH) = data::EdgeHandler::move(m_edge, m_drag.value(), pt);
+
+    auto* com = new undo::ResizeShape(m_diagram, m_resize, QRectF(shape->position(), shape->size()), dX, dY, dW, dH);
+    m_diagram.addOperation(com);
+    update();
+    m_drag = pt;
+}
+
+void DrawArea::handleSelect(QPointF pt)
+{
+    auto pt2 = m_drag.value();
+    QRectF rect(qMin(pt.x(), pt2.x()), qMin(pt.y(), pt2.y()), qAbs(pt2.x() - pt.x()), qAbs(pt2.y() - pt.y()));
+    m_rectSelect = rect;
+
+    update();
+}
+
+void DrawArea::finishConnect(QPointF pt)
 {
     auto index = m_diagram.findShape(pt, true);
     if (index < 0)
@@ -310,8 +359,6 @@ void DrawArea::handleConnect(QPointF pt)
         auto con = m_diagram.findConnector(index, pt);
         m_conStart.setOut(con.out(), con.outIndex());
     }
-
-    qDebug() << "handleConnect" << m_conStart.isValid();
 
     if (m_conStart.isValid() == false)
         return;
@@ -328,17 +375,17 @@ void DrawArea::handleConnect(QPointF pt)
     m_conStart = data::Connection();
 }
 
-void DrawArea::handleResize(QPointF pt)
+void DrawArea::finishSelect(QPointF pt)
 {
-    if (m_resize < 0)
-        return;
-    auto* shape = m_diagram.shapes().at(m_resize).get();
+    auto pt2 = m_drag.value();
+    QRectF rect(qMin(pt.x(), pt2.x()), qMin(pt.y(), pt2.y()), qAbs(pt2.x() - pt.x()), qAbs(pt2.y() - pt.y()));
 
-    double dX, dY, dW, dH;
-    std::tie(dX, dY, dW, dH) = data::EdgeHandler::move(m_edge, m_drag.value(), pt);
+    std::unordered_set<int> shapes;
+    std::unordered_set<int> cons;
 
-    auto* com = new undo::ResizeShape(m_diagram, m_resize, QRectF(shape->position(), shape->size()), dX, dY, dW, dH);
+    std::tie(shapes, cons) = m_diagram.inside(rect);
+    auto* com = new undo::SwitchSelection(m_diagram);
+    com->recordSelections(shapes, cons);
     m_diagram.addOperation(com);
     update();
-    m_drag = pt;
 }

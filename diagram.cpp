@@ -13,6 +13,7 @@ void Diagram::clear()
 {
     m_vConnections.clear();
     m_vShapes.clear();
+    m_stack.clear();
 }
 
 void Diagram::addOperation(QUndoCommand* com)
@@ -50,6 +51,26 @@ std::unordered_set<int> Diagram::selectedConnections() const
             set.insert(i);
 
     return set;
+}
+
+std::tuple<std::unordered_set<int>, std::unordered_set<int>> Diagram::inside(QRectF rect) const
+{
+    std::unordered_set<int> shapes;
+    for (size_t i = 0; i < m_vShapes.size(); ++i) {
+        if (rect.contains(m_vShapes[i]->rect()) == true)
+            shapes.insert(i);
+    }
+
+    std::unordered_set<int> cons;
+    for (size_t i = 0; i < m_vConnections.size(); ++i) {
+        const auto& con = m_vConnections[i];
+        if ((rect.contains(con.out()->rect()) == true) &&
+            (rect.contains(con.in()->rect()) == true)) {
+                cons.insert(i);
+            }
+    }
+
+    return std::make_tuple(shapes, cons);
 }
 
 int Diagram::indexOf(AbstractShape* shape) const

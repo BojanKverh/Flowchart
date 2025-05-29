@@ -15,7 +15,8 @@ class DrawArea : public QWidget
         emmNone,
         emmMove,
         emmConnect,
-        emmResize
+        emmResize,
+        emmSelect
     };
 
 public:
@@ -59,17 +60,22 @@ private:
 
     void handleError(data::Diagram::Error error);
 
-    bool checkMove(int index) const;
-    bool checkConnect(int index, QPointF pt);
-    bool checkResize(int index, QPointF pt);
+    bool initMove(int index) const;
+    bool initConnect(int index, QPointF pt);
+    bool initResize(int index, QPointF pt);
+    bool initSelect(QPointF pt);
 
     void handleMove(QPointF pt);
-    void handleConnect(QPointF pt);
     void handleResize(QPointF pt);
+    void handleSelect(QPointF pt);
+
+    void finishConnect(QPointF pt);
+    void finishSelect(QPointF pt);
 
 private:
     data::Diagram m_diagram;
     std::optional<QPointF> m_drag;
+    std::optional<QRectF> m_rectSelect;
     data::Connection m_conStart;
     MoveMode m_mode = MoveMode::emmNone;
     data::Edge m_edge = data::Edge::eNone;

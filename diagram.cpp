@@ -7,13 +7,21 @@
 
 namespace data {
 
-Diagram::Diagram() {}
+Diagram::Diagram()
+{
+    m_name = "NONAME";
+}
 
 void Diagram::clear()
 {
     m_vConnections.clear();
     m_vShapes.clear();
     m_stack.clear();
+}
+
+bool Diagram::isEmpty() const
+{
+    return (m_vShapes.size() == 0) && (m_stack.count() == 0);
 }
 
 void Diagram::addOperation(QUndoCommand* com)

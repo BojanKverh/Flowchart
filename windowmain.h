@@ -6,6 +6,7 @@
 #include "lastfileshandler.h"
 
 class QToolBar;
+class QTabWidget;
 
 class ScrollArea;
 class DrawArea;
@@ -27,6 +28,11 @@ public:
      * @brief ~WindowMain Destructor
      */
     virtual ~WindowMain();
+    /**
+     * @brief current Returns the current draw area
+     * @return current area
+     */
+    DrawArea* current() const;
 
 private:
     /**
@@ -70,11 +76,26 @@ private:
      * @param file File name to load
      */
     void load(const QString& file);
+    /**
+     * @brief undo Undoes the last command on the current draw area
+     */
+    void undo();
+    /**
+     * @brief redo Redoes the last command on the current draw area
+     */
+    void redo();
+    /**
+     * @brief newTab Opens a new tab
+     */
+    void newTab();
+    /**
+     * @brief updateName Updates the current tab name
+     */
+    void updateName();
 
 private:
     QToolBar* m_ptb;
-    ScrollArea* m_pArea;
-    DrawArea* m_pCanvas;
+    QTabWidget* m_pCentral;
     LastFilesHandler* m_lastFiles;
 
     QMenu* m_fileMenu;

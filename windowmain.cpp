@@ -10,6 +10,7 @@
 #include <QFileDialog>
 #include <QShortcut>
 #include <QLabel>
+#include <QTabWidget>
 #include <QWidgetAction>
 
 #include "scrollarea.h"
@@ -27,6 +28,16 @@ WindowMain::WindowMain(QWidget *parent)
 
 WindowMain::~WindowMain() {}
 
+DrawArea* WindowMain::current() const
+{
+    auto* area = dynamic_cast<ScrollArea*>(m_pCentral->currentWidget());
+    if (area == nullptr)
+        return nullptr;
+
+    auto* canvas = dynamic_cast<DrawArea*>(area->widget());
+    return canvas;
+}
+
 void WindowMain::buildUI()
 {
     m_lastFiles = new LastFilesHandler(10);
@@ -43,12 +54,10 @@ void WindowMain::buildUI()
 
     addToolBar(m_ptb);
 
-    m_pArea = new ScrollArea;
+    m_pCentral = new QTabWidget(this);
+    newTab();
 
-    m_pCanvas = new DrawArea;
-    m_pArea->setWidget(m_pCanvas);
-
-    setCentralWidget(m_pArea);
+    setCentralWidget(m_pCentral);
 
     auto* menuBar = new QMenuBar;
     m_fileMenu = new QMenu(tr("File"));
@@ -62,8 +71,8 @@ void WindowMain::buildUI()
     menuBar->addMenu(m_fileMenu);
 
     auto* pMenu = new QMenu(tr("Edit"));
-    pMenu->addAction(tr("Undo (Ctrl+Z)"), m_pCanvas, &DrawArea::undo);
-    pMenu->addAction(tr("Redo (Ctrl+Y)"), m_pCanvas, &DrawArea::redo);
+    pMenu->addAction(tr("Undo (Ctrl+Z)"), this, &WindowMain::undo);
+    pMenu->addAction(tr("Redo (Ctrl+Y)"), this, &WindowMain::redo);
     menuBar->addMenu(pMenu);
 
     setMenuBar(menuBar);
@@ -75,11 +84,11 @@ void WindowMain::buildControl()
 {
     auto* sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Z), this);
     sc->setContext(Qt::ApplicationShortcut);
-    connect(sc, &QShortcut::activated, m_pCanvas, &DrawArea::undo);
+    connect(sc, &QShortcut::activated, this, &WindowMain::undo);
 
     sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Y), this);
     sc->setContext(Qt::ApplicationShortcut);
-    connect(sc, &QShortcut::activated, m_pCanvas, &DrawArea::redo);
+    connect(sc, &QShortcut::activated, this, &WindowMain::redo);
 
     sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_O), this);
     sc->setContext(Qt::ApplicationShortcut);
@@ -119,8 +128,7 @@ void WindowMain::addButton(QString icon, QString text, data::ShapeType shape)
 
 void WindowMain::newDiagram()
 {
-    m_pCanvas->diagram().clear();
-    m_pCanvas->update();
+    newTab();
 }
 
 void WindowMain::load()
@@ -138,7 +146,8 @@ void WindowMain::save()
     if (file.isEmpty() == true)
         return;
 
-    json::Diagram diagram(m_pCanvas->diagram(), m_pCanvas->width(), m_pCanvas->height());
+    auto* canvas = current();
+    json::Diagram diagram(canvas->diagram(), canvas->width(), canvas->height());
     QFile f(file);
     if (f.open(QFile::WriteOnly) == false)
         return;
@@ -187,13 +196,61 @@ void WindowMain::updateLastFiles()
 void WindowMain::load(const QString& file)
 {
     QFile f(file);
-    f.open(QFile::ReadOnly);
-    json::Diagram diagram(m_pCanvas->diagram(), m_pCanvas->width(), m_pCanvas->height());
+    if (f.open(QFile::ReadOnly) == false)
+        return;
+
+    m_lastFiles->recordFile(file);
+
+    for (int i = 0; i < m_pCentral->count(); ++i) {
+        auto* area = dynamic_cast<ScrollArea*>(m_pCentral->widget(i));
+        if (area == nullptr)
+            break;
+        auto* canvas = dynamic_cast<DrawArea*>(area->widget());
+        if (canvas->diagram().name() == file.toStdString()) {
+            m_pCentral->setCurrentIndex(i);
+            return;
+        }
+    }
+
+    newTab();
+    auto* canvas = current();
+    json::Diagram diagram(canvas->diagram(), canvas->width(), canvas->height());
     auto doc = QJsonDocument::fromJson(f.readAll());
     diagram.fromJson(doc);
     f.close();
 
-    m_pCanvas->resize(diagram.width(), diagram.height());
-    m_pCanvas->update();
-    m_lastFiles->recordFile(file);
+    canvas->resize(diagram.width(), diagram.height());
+    canvas->update();
+    canvas->diagram().setName(file.toStdString());
+    updateName();
+}
+
+void WindowMain::undo()
+{
+    current()->undo();
+}
+
+void WindowMain::redo()
+{
+    current()->redo();
+}
+
+void WindowMain::newTab()
+{
+    if (current() != nullptr && current()->diagram().isEmpty() == true)
+        return;
+
+    auto* area = new ScrollArea;
+    auto* canvas = new DrawArea;
+    area->setWidget(canvas);
+    QFileInfo fi(QString::fromStdString(canvas->diagram().name()));
+    m_pCentral->addTab(area, fi.fileName());
+    m_pCentral->setCurrentIndex(m_pCentral->count() - 1);
+}
+
+void WindowMain::updateName()
+{
+    QFileInfo fi(QString::fromStdString(current()->diagram().name()));
+    qDebug() << "UPDATE NAME" << m_pCentral->count() << fi.fileName();
+    m_pCentral->setTabText(m_pCentral->currentIndex(), fi.fileName());
 }

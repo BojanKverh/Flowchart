@@ -33,6 +33,21 @@ public:
      */
     void clear();
     /**
+     * @brief isEmpty Returns true, if the diagram is empty
+     * @return true, if diagram is empty (no shapes and no undo history) and false otherwise
+     */
+    bool isEmpty() const;
+    /**
+     * @brief name Returns the diagram filename
+     * @return diagram filename
+     */
+    std::string name() const { return m_name; }
+    /**
+     * @brief setName Sets the diagram filename
+     * @param name New filename
+     */
+    void setName(const std::string& name) { m_name = name; }
+    /**
      * @brief addOperation Adds an operation to the undo/redo stack
      * @param com Pointer to the operation
      */
@@ -191,6 +206,7 @@ public:
     std::tuple<std::vector<std::unique_ptr<AbstractShape>>, std::vector<Connection>> deleteSelected();
 
 private:
+    std::string m_name;
     std::vector<std::unique_ptr<AbstractShape>> m_vShapes;
     std::vector<Connection> m_vConnections;
 

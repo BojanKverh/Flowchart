@@ -9,7 +9,7 @@ namespace data {
 
 Diagram::Diagram()
 {
-    m_name = "NONAME";
+    m_name = "";
 }
 
 void Diagram::clear()

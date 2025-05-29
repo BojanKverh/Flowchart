@@ -65,6 +65,7 @@ void WindowMain::buildUI()
     m_fileMenu->addSeparator();
     m_fileMenu->addAction(tr("Load (Ctrl+O)"), this, qOverload<>(&WindowMain::load));
     m_fileMenu->addAction(tr("Save (Ctrl+S)"), this, &WindowMain::save);
+    m_fileMenu->addAction(tr("Save As (Ctrl+Shirt+S)"), this, &WindowMain::saveAs);
     m_lfStart = m_fileMenu->addSeparator();
     m_lfEnd = m_fileMenu->addSeparator();
     m_fileMenu->addAction(tr("Quit (Ctrl+Q)"), this, &WindowMain::quit);
@@ -97,6 +98,10 @@ void WindowMain::buildControl()
     sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_S), this);
     sc->setContext(Qt::ApplicationShortcut);
     connect(sc, &QShortcut::activated, this, &WindowMain::save);
+
+    sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_S), this);
+    sc->setContext(Qt::ApplicationShortcut);
+    connect(sc, &QShortcut::activated, this, &WindowMain::saveAs);
 
     sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Q), this);
     sc->setContext(Qt::ApplicationShortcut);
@@ -142,11 +147,13 @@ void WindowMain::load()
 
 void WindowMain::save()
 {
-    auto file = QFileDialog::getSaveFileName(this, tr("Select file to save into"), ".", "*.fcd");
-    if (file.isEmpty() == true)
-        return;
-
     auto* canvas = current();
+    auto file = QString::fromStdString(canvas->diagram().name());
+    if (file.isEmpty() == true) {
+        saveAs();
+        return;
+    }
+
     json::Diagram diagram(canvas->diagram(), canvas->width(), canvas->height());
     QFile f(file);
     if (f.open(QFile::WriteOnly) == false)
@@ -156,6 +163,18 @@ void WindowMain::save()
     f.write(diagram.toJson().toJson());
     f.close();
     m_lastFiles->recordFile(file);
+}
+
+void WindowMain::saveAs()
+{
+    auto file = QFileDialog::getSaveFileName(this, tr("Select file to save into"), ".", "*.fcd");
+    if (file.isEmpty() == true)
+        return;
+
+    auto* canvas = current();
+    canvas->diagram().setName(file.toStdString());
+    updateName();
+    save();
 }
 
 void WindowMain::quit()
@@ -250,7 +269,12 @@ void WindowMain::newTab()
 
 void WindowMain::updateName()
 {
-    QFileInfo fi(QString::fromStdString(current()->diagram().name()));
-    qDebug() << "UPDATE NAME" << m_pCentral->count() << fi.fileName();
-    m_pCentral->setTabText(m_pCentral->currentIndex(), fi.fileName());
+    auto name = QString::fromStdString(current()->diagram().name());
+    if (name.length() == 0)
+        name = tr("NONAME");
+    else {
+        QFileInfo fi(name);
+        name = fi.fileName();
+    }
+    m_pCentral->setTabText(m_pCentral->currentIndex(), name);
 }

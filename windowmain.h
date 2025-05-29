@@ -60,9 +60,14 @@ private:
      */
     void load();
     /**
-     * @brief save Saves the diagram content
+     * @brief save Saves the diagram content, using current diagram name. If the name is not set,
+     * it will ask for it by calling saveAs()
      */
     void save();
+    /**
+     * @brief saveAs Saves the diagram content, asking the user for the file name
+     */
+    void saveAs();
     /**
      * @brief quit Quits the application
      */

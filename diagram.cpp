@@ -260,6 +260,16 @@ void Diagram::moveSelected(QPointF pt)
     }
 }
 
+void Diagram::copySelected(const Diagram& diagram)
+{
+    size_t n = m_vShapes.size();
+    std::unordered_map<size_t, size_t> map;
+    const auto& others = diagram.shapes();
+    for (size_t i = 0; i < diagram.shapes().size(); ++i) {
+        if ()
+    }
+}
+
 std::tuple<std::vector<std::unique_ptr<AbstractShape> >, std::vector<Connection> > Diagram::deleteSelected()
 {
     std::unordered_set<AbstractShape*> set;

@@ -24,6 +24,7 @@ Diagram::Diagram(const Diagram& diagram)
     auto out = diagram.findShape(con.out());
     auto in  = diagram.findShape(con.in());
     Connection copy(m_vShapes[out].get(), con.outIndex(), m_vShapes[in].get());
+    addConnection(copy);
   }
 }
 
@@ -255,7 +256,25 @@ void Diagram::copySelected(const Diagram& diagram)
   size_t n = m_vShapes.size();
   std::unordered_map<size_t, size_t> map;
   const auto& others = diagram.shapes();
-  for (size_t i = 0; i < diagram.shapes().size(); ++i) {
+  for (size_t i = 0; i < others.size(); ++i) {
+    if (others[i]->isSelected() == true) {
+      map[i] = m_vShapes.size();
+      addShape(ShapeFactory::copy(others[i].get()));
+    }
+  }
+
+  const auto& cons = diagram.connections();
+  for (size_t i = 0; i < cons.size(); ++i) {
+    if ((cons[i].isSelected() == true)
+        || ((cons[i].out()->isSelected() == true) && (cons[i].in()->isSelected() == true))) {
+      auto newCon = cons[i];
+      auto oldOut = diagram.findShape(cons[i].out());
+      auto oldIn  = diagram.findShape(cons[i].in());
+      newCon.setOut(m_vShapes[map[oldOut]].get(), cons[i].outIndex());
+      newCon.setIn(m_vShapes[map[oldIn]].get());
+      newCon.update();
+      addConnection(newCon);
+    }
   }
 }
 

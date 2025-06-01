@@ -272,16 +272,15 @@ void WindowMain::redo()
 
 void WindowMain::copy()
 {
-  m_copy = std::make_unique<data::Diagram>(current()->diagram());
-  qDebug() << "COPY";
+  m_copy = std::make_unique<data::Diagram>();
+  m_copy->copySelected(current()->diagram());
 }
 
 void WindowMain::paste()
 {
   if (m_copy == nullptr)
     return;
-
-  qDebug() << "PASTE" << m_copy->shapes().size();
+  current()->paste(m_copy.get());
 }
 
 void WindowMain::newTab()

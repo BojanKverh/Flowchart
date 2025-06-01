@@ -37,6 +37,11 @@ public:
    * @brief redo Redoes the last operation
    */
   void redo();
+  /**
+   * @brief paste Pastes the diagram into the current one
+   * @param copy Pointer to the diagram to paste
+   */
+  void paste(data::Diagram* copy);
 
 protected:
   void mousePressEvent(QMouseEvent* pME) override;

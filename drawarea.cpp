@@ -8,6 +8,7 @@
 #include "undo/deleteselected.h"
 #include "undo/editproperties.h"
 #include "undo/moveshape.h"
+#include "undo/paste.h"
 #include "undo/resizeshape.h"
 
 #include <QMenu>
@@ -39,6 +40,16 @@ void DrawArea::undo()
 void DrawArea::redo()
 {
   m_diagram.redo();
+  update();
+}
+
+void DrawArea::paste(data::Diagram* copy)
+{
+  if (copy->shapes().size() == 0)
+    return;
+
+  auto* com = new undo::Paste(m_diagram, *copy);
+  m_diagram.addOperation(com);
   update();
 }
 

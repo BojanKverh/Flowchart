@@ -9,5 +9,6 @@ const int ciMoveShape       = 4;
 const int ciDeleteSelected  = 5;
 const int ciEditProperties  = 6;
 const int ciResizeShape     = 7;
+const int ciPaste           = 8;
 
 } // namespace undo

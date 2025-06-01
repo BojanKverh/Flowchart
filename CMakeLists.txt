@@ -76,7 +76,9 @@ add_executable(${PROJECT_NAME}
     undo/switchselection.cpp
     undo/moveshape.h
     undo/moveshape.cpp
+    undo/paste.cpp
     undo/undoid.h
+    undo/paste.h
     undo/deleteselected.h
     undo/deleteselected.cpp
     undo/editproperties.h

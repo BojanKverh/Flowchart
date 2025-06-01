@@ -10,16 +10,16 @@ namespace data {
 class ShapeDecision : public AbstractShape
 {
 public:
-    /**
-     * @brief ShapeDecision Default constructor
-     */
-    ShapeDecision();
-    /**
-     * @brief draw Draws the shape
-     * @param P Reference to the pointer object
-     * @param f scale parameter
-     */
-    void draw(QPainter& P, double f = 1.0) override;
+  /**
+   * @brief ShapeDecision Default constructor
+   */
+  ShapeDecision();
+  /**
+   * @brief draw Draws the shape
+   * @param P Reference to the pointer object
+   * @param f scale parameter
+   */
+  void draw(QPainter& P, double f = 1.0) override;
 };
 
-} // namespace
+} // namespace data

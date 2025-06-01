@@ -12,31 +12,31 @@ namespace undo {
 class DeleteSelected : public QUndoCommand
 {
 public:
-    /**
-     * @brief DeleteSelected Constructor
-     * @param diagram Reference to the diagram
-     */
-    DeleteSelected(data::Diagram& diagram);
+  /**
+   * @brief DeleteSelected Constructor
+   * @param diagram Reference to the diagram
+   */
+  DeleteSelected(data::Diagram& diagram);
 
-    /**
-     * @brief id Returns the command id
-     * @return command id
-     */
-    int id() const override { return undo::ciDeleteSelected; }
+  /**
+   * @brief id Returns the command id
+   * @return command id
+   */
+  int id() const override { return undo::ciDeleteSelected; }
 
-    /**
-     * @brief undo Undoes the command
-     */
-    void undo() override;
-    /**
-     * @brief redo Redoes the command
-     */
-    void redo() override;
+  /**
+   * @brief undo Undoes the command
+   */
+  void undo() override;
+  /**
+   * @brief redo Redoes the command
+   */
+  void redo() override;
 
 private:
-    data::Diagram& m_diagram;
-    std::vector<std::unique_ptr<data::AbstractShape>> m_shapes;
-    std::vector<data::Connection> m_cons;
+  data::Diagram& m_diagram;
+  std::vector<std::unique_ptr<data::AbstractShape>> m_shapes;
+  std::vector<data::Connection> m_cons;
 };
 
-}   // namespace
+} // namespace undo

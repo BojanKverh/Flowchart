@@ -10,16 +10,16 @@ namespace data {
 class ShapeStart : public AbstractShape
 {
 public:
-    /**
-     * @brief ShapeStart Default constructor
-     */
-    ShapeStart();
-    /**
-     * @brief draw Draws the shape
-     * @param P Reference to the pointer object
-     * @param f scale parameter
-     */
-    void draw(QPainter& P, double f = 1.0) override;
+  /**
+   * @brief ShapeStart Default constructor
+   */
+  ShapeStart();
+  /**
+   * @brief draw Draws the shape
+   * @param P Reference to the pointer object
+   * @param f scale parameter
+   */
+  void draw(QPainter& P, double f = 1.0) override;
 };
 
-} // namespace
+} // namespace data

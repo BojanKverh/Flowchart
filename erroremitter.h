@@ -4,22 +4,23 @@
 
 #include "diagram.h"
 
-namespace data
-{
+namespace data {
 
 class ErrorEmitter : public QObject
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    ErrorEmitter() : QObject() {};
+  ErrorEmitter()
+    : QObject()
+  {}
 
 signals:
-    /**
-     * @brief diagramError Emitted when an error at diagram operation occured
-     * @param error Error specification
-     */
-    void diagramError(data::Diagram::Error error);
+  /**
+   * @brief diagramError Emitted when an error at diagram operation occured
+   * @param error Error specification
+   */
+  void diagramError(data::Diagram::Error error);
 };
 
-} // namespace
+} // namespace data

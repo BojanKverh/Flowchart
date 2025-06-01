@@ -16,47 +16,47 @@ namespace undo {
 class SwitchSelection : public QUndoCommand
 {
 public:
-    /**
-     * @brief SwitchSelection Constructor
-     * @param diagram Reference to the diagram object
-     */
-    SwitchSelection(data::Diagram& diagram);
-    /**
-     * @brief id Returns the command id
-     * @return command id
-     */
-    int id() const override { return ciSwitchSelection; }
+  /**
+   * @brief SwitchSelection Constructor
+   * @param diagram Reference to the diagram object
+   */
+  SwitchSelection(data::Diagram& diagram);
+  /**
+   * @brief id Returns the command id
+   * @return command id
+   */
+  int id() const override { return ciSwitchSelection; }
 
-    /**
-     * @brief recordSelections Records the selected shapes and connections into m_newShapes and
-     * m_newCons set
-     */
-    void recordSelections();
-    /**
-     * @brief recordSelections Records the selected shapes and connections
-     * @param shapes Shapes to select
-     * @param cons Connections to select
-     */
-    void recordSelections(const std::unordered_set<int>& shapes, const std::unordered_set<int>& cons);
+  /**
+   * @brief recordSelections Records the selected shapes and connections into m_newShapes and
+   * m_newCons set
+   */
+  void recordSelections();
+  /**
+   * @brief recordSelections Records the selected shapes and connections
+   * @param shapes Shapes to select
+   * @param cons Connections to select
+   */
+  void recordSelections(const std::unordered_set<int>& shapes, const std::unordered_set<int>& cons);
 
-    /**
-     * @brief undo Undoes the command
-     */
-    void undo() override;
-    /**
-     * @brief redo Redoes the command
-     */
-    void redo() override;
-
-private:
-    bool equal(const std::unordered_set<int>& set1, const std::unordered_set<int>& set2) const;
+  /**
+   * @brief undo Undoes the command
+   */
+  void undo() override;
+  /**
+   * @brief redo Redoes the command
+   */
+  void redo() override;
 
 private:
-    data::Diagram& m_diagram;
-    std::unordered_set<int> m_oldShapes;
-    std::unordered_set<int> m_oldCons;
-    std::unordered_set<int> m_newShapes;
-    std::unordered_set<int> m_newCons;
+  bool equal(const std::unordered_set<int>& set1, const std::unordered_set<int>& set2) const;
+
+private:
+  data::Diagram& m_diagram;
+  std::unordered_set<int> m_oldShapes;
+  std::unordered_set<int> m_oldCons;
+  std::unordered_set<int> m_newShapes;
+  std::unordered_set<int> m_newCons;
 };
 
-}
+} // namespace undo

@@ -4,11 +4,11 @@
 
 class ScrollArea : public QScrollArea
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    ScrollArea(QWidget* pParent = nullptr);
+  ScrollArea(QWidget* pParent = nullptr);
 
 protected:
-    void resizeEvent(QResizeEvent* pRE);
+  void resizeEvent(QResizeEvent* pRE);
 };

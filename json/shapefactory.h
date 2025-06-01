@@ -16,27 +16,27 @@ namespace json {
 class ShapeFactory
 {
 public:
-    /**
-     * @brief ShapeFactory Default constructor
-     */
-    ShapeFactory();
+  /**
+   * @brief ShapeFactory Default constructor
+   */
+  ShapeFactory();
 
-    /**
-     * @brief io Returns a proper reader/writer
-     * @param shape Shape to obtain the reader/writer object for
-     * @return Pointer to the reader/writer. This object belongs to
-     */
-    AbstractShape* io(data::AbstractShape* shape) const;
-    /**
-     * @brief io Returns a proper reader/writer
-     * @param type Shape type, that determines what type of reader/writer to return
-     * @return Requested reader/writer
-     */
-    AbstractShape* io(data::ShapeType type) const;
+  /**
+   * @brief io Returns a proper reader/writer
+   * @param shape Shape to obtain the reader/writer object for
+   * @return Pointer to the reader/writer. This object belongs to
+   */
+  AbstractShape* io(data::AbstractShape* shape) const;
+  /**
+   * @brief io Returns a proper reader/writer
+   * @param type Shape type, that determines what type of reader/writer to return
+   * @return Requested reader/writer
+   */
+  AbstractShape* io(data::ShapeType type) const;
 
 private:
-    std::unique_ptr<AbstractShape> m_abstract;
-    std::unique_ptr<ShapeProcess> m_process;
+  std::unique_ptr<AbstractShape> m_abstract;
+  std::unique_ptr<ShapeProcess> m_process;
 };
 
-} // namespace
+} // namespace json

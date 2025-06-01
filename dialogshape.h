@@ -13,24 +13,24 @@ class QPushButton;
  */
 class DialogShape : public QDialog
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    DialogShape(data::AbstractShape* shape, QWidget* parent = nullptr);
+  DialogShape(data::AbstractShape* shape, QWidget* parent = nullptr);
 
-    QColor backgroundColor() const { return m_bg; }
-    QColor textColor() const { return m_fg; }
-    QString text() const { return m_pleText->text(); }
+  QColor backgroundColor() const { return m_bg; }
+  QColor textColor() const { return m_fg; }
+  QString text() const { return m_pleText->text(); }
 
 private slots:
-    void editBg();
-    void editFg();
-    void updateUI();
+  void editBg();
+  void editFg();
+  void updateUI();
 
 private:
-    QColor m_bg;
-    QColor m_fg;
-    QPushButton* m_pbBg;
-    QPushButton* m_pbFg;
-    QLineEdit* m_pleText;
+  QColor m_bg;
+  QColor m_fg;
+  QPushButton* m_pbBg;
+  QPushButton* m_pbFg;
+  QLineEdit* m_pleText;
 };

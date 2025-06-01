@@ -14,30 +14,30 @@ namespace json {
 class Connection
 {
 public:
-    /**
-     * @brief Connection Default constructor
-     */
-    Connection();
-    /**
-     * @brief toJson Converts given connection into JSON object
-     * @param con Connection to convert
-     * @param diagram Read only reference to the diagram to
-     * calculate connector indices
-     * @return Generated JSON
-     */
-    QJsonObject toJson(const data::Connection& con, const data::Diagram &diagram) const;
-    /**
-     * @brief fromJson Reads the data from object and creates a connection
-     * @param obj JSON object to read the information from
-     * @param diagram Read only reference to diagram object
-     * @return Created connection
-     */
-    data::Connection fromJson(const QJsonObject& obj, const data::Diagram& diagram);
+  /**
+   * @brief Connection Default constructor
+   */
+  Connection();
+  /**
+   * @brief toJson Converts given connection into JSON object
+   * @param con Connection to convert
+   * @param diagram Read only reference to the diagram to
+   * calculate connector indices
+   * @return Generated JSON
+   */
+  QJsonObject toJson(const data::Connection& con, const data::Diagram& diagram) const;
+  /**
+   * @brief fromJson Reads the data from object and creates a connection
+   * @param obj JSON object to read the information from
+   * @param diagram Read only reference to diagram object
+   * @return Created connection
+   */
+  data::Connection fromJson(const QJsonObject& obj, const data::Diagram& diagram);
 
 private:
-    const QString m_cqsOut = "out";
-    const QString m_cqsOutIndex = "index";
-    const QString m_cqsIn = "in";
+  const QString m_cqsOut      = "out";
+  const QString m_cqsOutIndex = "index";
+  const QString m_cqsIn       = "in";
 };
 
-} // namespace
+} // namespace json

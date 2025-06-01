@@ -10,16 +10,16 @@ namespace data {
 class ShapeProcess : public AbstractShape
 {
 public:
-    /**
-     * @brief ShapeProcess Default constructor
-     */
-    ShapeProcess();
-    /**
-     * @brief draw Draws the shape
-     * @param P Reference to the pointer object
-     * @param f scale parameter
-     */
-    void draw(QPainter& P, double f = 1.0) override;
+  /**
+   * @brief ShapeProcess Default constructor
+   */
+  ShapeProcess();
+  /**
+   * @brief draw Draws the shape
+   * @param P Reference to the pointer object
+   * @param f scale parameter
+   */
+  void draw(QPainter& P, double f = 1.0) override;
 };
 
-} // namespace
+} // namespace data

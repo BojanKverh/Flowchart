@@ -16,9 +16,10 @@ void AddShape::redo()
   auto shape = factory.shape(static_cast<int>(m_type));
   shape->moveCenter(m_pt);
   auto err = m_diagram.addShape(std::move(shape));
-  if (err != data::Diagram::Error::eNone)
+  if (err != data::Diagram::Error::eNone) {
     emit m_emitter->diagramError(err);
-  else {
+    setObsolete(true);
+  } else {
     m_diagram.selectConnection(-1);
     m_diagram.selectShape(m_index);
     recordSelections();

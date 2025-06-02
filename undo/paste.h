@@ -18,13 +18,15 @@ class Paste : public SwitchSelection
 public:
   /**
    * @brief Paste Constructor
+   * @param emitter Pointer to the error emitter object
    * @param diagram Reference to the diagram
+   * @param copy Diagram to copy from
    */
-  Paste(data::Diagram& diagram, data::Diagram& copy)
+  Paste(data::ErrorEmitter* emitter, data::Diagram& diagram, data::Diagram& copy)
     : SwitchSelection(diagram)
+    , m_emitter(emitter)
     , m_diagram(diagram)
-    , m_copy(copy)
-  {
+    , m_copy(copy) {
     m_shapeIndex = m_diagram.shapes().size();
     m_conIndex   = m_diagram.connections().size();
   }
@@ -43,6 +45,7 @@ public:
   void redo() override;
 
 private:
+  data::ErrorEmitter* m_emitter;
   data::Diagram& m_diagram;
   size_t m_shapeIndex;
   size_t m_conIndex;

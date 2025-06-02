@@ -48,7 +48,7 @@ void DrawArea::paste(data::Diagram* copy)
   if (copy->shapes().size() == 0)
     return;
 
-  auto* com = new undo::Paste(m_diagram, *copy);
+  auto* com = new undo::Paste(&m_emitter, m_diagram, *copy);
   m_diagram.addOperation(com);
   update();
 }

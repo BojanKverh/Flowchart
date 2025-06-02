@@ -17,9 +17,14 @@ void Paste::redo()
 {
   m_diagram.selectShape(-1);
   m_diagram.selectConnection(-1);
-  m_diagram.copySelected(m_copy);
-  recordSelections();
-  SwitchSelection::redo();
+  auto err = m_diagram.copySelected(m_copy);
+  if (err != data::Diagram::Error::eNone) {
+    emit m_emitter->diagramError(err);
+    setObsolete(true);
+  } else {
+    recordSelections();
+    SwitchSelection::redo();
+  }
 }
 
 } // namespace undo

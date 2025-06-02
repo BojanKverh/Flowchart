@@ -5,13 +5,10 @@
 #include <algorithm>
 #include <unordered_set>
 
-#include <QDebug>
-
 namespace data {
 
-Diagram::Diagram()
+Diagram::Diagram() : m_name()
 {
-  m_name = "";
 }
 
 Diagram::Diagram(const Diagram& diagram)
@@ -251,9 +248,13 @@ void Diagram::moveSelected(QPointF pt)
   }
 }
 
-void Diagram::copySelected(const Diagram& diagram)
+Diagram::Error Diagram::copySelected(const Diagram& diagram)
 {
-  size_t n = m_vShapes.size();
+  if ((hasStart() == true) && (diagram.hasStart() == true))
+    return Diagram::Error::eStartExists;
+  if ((hasEnd() == true) && (diagram.hasEnd() == true))
+    return Diagram::Error::eEndExists;
+
   std::unordered_map<size_t, size_t> map;
   const auto& others = diagram.shapes();
   for (size_t i = 0; i < others.size(); ++i) {
@@ -276,6 +277,7 @@ void Diagram::copySelected(const Diagram& diagram)
       addConnection(newCon);
     }
   }
+  return Diagram::Error::eNone;
 }
 
 std::tuple<std::vector<std::unique_ptr<AbstractShape>>, std::vector<Connection>>

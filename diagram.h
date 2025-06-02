@@ -211,7 +211,7 @@ public:
    * @brief copySelected Copies the selected shapes and connections into this diagram
    * @param diagram Diagram to copy from
    */
-  void copySelected(const Diagram& diagram);
+  Diagram::Error copySelected(const Diagram& diagram);
   /**
    * @brief deleteSelected Deletes the selected shapes and connections. This method is supposed to
    * be called by QUndoStack only

@@ -373,6 +373,9 @@ void DrawArea::finishConnect(QPointF pt)
 
 void DrawArea::finishSelect(QPointF pt)
 {
+  if (m_rectSelect.has_value() == false)
+    return;
+
   auto pt2 = m_drag.value();
   QRectF rect(qMin(pt.x(), pt2.x()), qMin(pt.y(), pt2.y()), qAbs(pt2.x() - pt.x()),
               qAbs(pt2.y() - pt.y()));

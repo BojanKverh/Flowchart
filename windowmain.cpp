@@ -78,6 +78,8 @@ void WindowMain::buildUI()
   pMenu->addSeparator();
   pMenu->addAction(tr("Copy (Ctrl+C)"), this, &WindowMain::copy);
   pMenu->addAction(tr("Paste (Ctrl+V)"), this, &WindowMain::paste);
+  pMenu->addSeparator();
+  pMenu->addAction(tr("Select All (Ctrl+A)"), this, &WindowMain::selectAll);
   menuBar->addMenu(pMenu);
 
   setMenuBar(menuBar);
@@ -122,6 +124,10 @@ void WindowMain::buildControl()
   sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_V), this);
   sc->setContext(Qt::ApplicationShortcut);
   connect(sc, &QShortcut::activated, this, &WindowMain::paste);
+
+  sc = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_A), this);
+  sc->setContext(Qt::ApplicationShortcut);
+  connect(sc, &QShortcut::activated, this, &WindowMain::selectAll);
 }
 
 void WindowMain::addButton(QString icon, QString text, data::ShapeType shape)
@@ -281,6 +287,11 @@ void WindowMain::paste()
   if (m_copy == nullptr)
     return;
   current()->paste(m_copy.get());
+}
+
+void WindowMain::selectAll()
+{
+  current()->selectAll();
 }
 
 void WindowMain::newTab()

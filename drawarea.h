@@ -42,6 +42,10 @@ public:
    * @param copy Pointer to the diagram to paste
    */
   void paste(data::Diagram* copy);
+  /**
+   * @brief selectAll Selects all shapes and connections
+   */
+  void selectAll();
 
 protected:
   void mousePressEvent(QMouseEvent* pME) override;

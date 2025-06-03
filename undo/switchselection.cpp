@@ -33,6 +33,19 @@ void SwitchSelection::recordSelections(const std::unordered_set<int>& shapes,
     setObsolete(true);
 }
 
+void SwitchSelection::recordAll()
+{
+  std::unordered_set<int> shapes;
+  std::unordered_set<int> cons;
+
+  for (size_t i = 0; i < m_diagram.shapes().size(); ++i)
+    shapes.insert(i);
+  for (size_t i = 0; i < m_diagram.connections().size(); ++i)
+    cons.insert(i);
+
+  recordSelections(shapes, cons);
+}
+
 void SwitchSelection::undo()
 {
   auto& shapes = m_diagram.shapes();

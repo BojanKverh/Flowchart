@@ -38,6 +38,10 @@ public:
    * @param cons Connections to select
    */
   void recordSelections(const std::unordered_set<int>& shapes, const std::unordered_set<int>& cons);
+  /**
+   * @brief recordAll Records all shapes and connections as selected
+   */
+  void recordAll();
 
   /**
    * @brief undo Undoes the command

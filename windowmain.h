@@ -102,6 +102,10 @@ private:
    */
   void paste();
   /**
+   * @brief selectAll Selects all shapes and connections
+   */
+  void selectAll();
+  /**
    * @brief newTab Opens a new tab
    */
   void newTab();

@@ -154,26 +154,30 @@ int Diagram::findConnection(QPointF pt) const
 }
 
 bool Diagram::isSelectionEqual(const std::unordered_set<int>& shapes,
-                               const std::unordered_set<int>& cons) const {
+                               const std::unordered_set<int>& cons) const
+{
   return utils::SetCompare::equal(shapes, selectedShapes())
       && utils::SetCompare::equal(cons, selectedConnections());
 }
 
-bool Diagram::isShapeSelected(int iS) const {
+bool Diagram::isShapeSelected(int iS) const
+{
   if (iS < 0)
     return false;
 
   return m_vShapes[iS]->isSelected();
 }
 
-bool Diagram::isConnectionSelected(int iC) const {
+bool Diagram::isConnectionSelected(int iC) const
+{
   if (iC < 0)
     return false;
 
   return m_vConnections[iC].isSelected();
 }
 
-Connection Diagram::findConnector(int index, QPointF pt) const {
+Connection Diagram::findConnector(int index, QPointF pt) const
+{
   if (index < 0)
     return Connection();
 

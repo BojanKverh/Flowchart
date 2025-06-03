@@ -53,6 +53,14 @@ void DrawArea::paste(data::Diagram* copy)
   update();
 }
 
+void DrawArea::selectAll()
+{
+  auto* com = new undo::SwitchSelection(m_diagram);
+  com->recordAll();
+  m_diagram.addOperation(com);
+  update();
+}
+
 void DrawArea::mousePressEvent(QMouseEvent* pME)
 {
   if (pME->button() == Qt::LeftButton) {
@@ -68,7 +76,8 @@ void DrawArea::mousePressEvent(QMouseEvent* pME)
 
     if ((m_diagram.isSelectionEqual(shapes, cons) == false)
         && (m_diagram.isShapeSelected(iS) == false)
-        && (m_diagram.isConnectionSelected(iC) == false)) {
+        && (m_diagram.isConnectionSelected(iC) == false))
+    {
       auto* com = new undo::SwitchSelection(m_diagram);
       com->recordSelections(shapes, cons);
 

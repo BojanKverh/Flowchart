@@ -134,6 +134,28 @@ public:
    */
   int findConnection(QPointF pt) const;
   /**
+   * @brief isSelectionEqual Checks, if the selection in the two provided sets are equal to current
+   * selections
+   * @param shapes Shape indices to check
+   * @param cons Connection indices to check
+   * @return true, if the current selection is equal to shapes, cons and false otherwise
+   */
+  bool isSelectionEqual(const std::unordered_set<int>& shapes,
+                        const std::unordered_set<int>& cons) const;
+  /**
+   * @brief isShapeSelected Returns true, if shape with index iS is selected
+   * @param iS Shape index
+   * @return true, if shape with index iS is selected and false otherwise
+   */
+  bool isShapeSelected(int iS) const;
+  /**
+   * @brief isConnectionSelected Returns true, if connection with index iC is selected
+   * @param iC Connection index
+   * @return true, if connection with index iC is selected and false otherwise
+   */
+  bool isConnectionSelected(int iC) const;
+
+  /**
    * @brief isOnConnector checks if point is on any connector
    * @param index shape to check
    * @param pt Point to check

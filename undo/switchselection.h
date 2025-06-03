@@ -49,9 +49,6 @@ public:
   void redo() override;
 
 private:
-  bool equal(const std::unordered_set<int>& set1, const std::unordered_set<int>& set2) const;
-
-private:
   data::Diagram& m_diagram;
   std::unordered_set<int> m_oldShapes;
   std::unordered_set<int> m_oldCons;

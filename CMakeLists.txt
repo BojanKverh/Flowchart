@@ -45,6 +45,7 @@ set(HEADERS
     shapes/shapetype.h
     windowmain.h
     json/diagram.h
+    utils/setcompare.h
 )
 
 # Resource datoteke
@@ -91,6 +92,8 @@ add_executable(${PROJECT_NAME}
     edge.cpp
     lastfileshandler.h
     lastfileshandler.cpp
+    utils/setcompare.h
+
 
 )
 

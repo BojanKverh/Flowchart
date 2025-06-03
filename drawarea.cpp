@@ -59,18 +59,21 @@ void DrawArea::mousePressEvent(QMouseEvent* pME)
     auto pt = pME->position();
     auto iS = m_diagram.findShape(pt, true);
     auto iC = (iS < 0 ? m_diagram.findConnection(pt) : -1);
-
-    auto* com = new undo::SwitchSelection(m_diagram);
     std::unordered_set<int> shapes;
     std::unordered_set<int> cons;
-
     if (iS >= 0)
       shapes.insert(iS);
     if (iC >= 0)
       cons.insert(iC);
-    com->recordSelections(shapes, cons);
 
-    m_diagram.addOperation(com);
+    if ((m_diagram.isSelectionEqual(shapes, cons) == false)
+        && (m_diagram.isShapeSelected(iS) == false)
+        && (m_diagram.isConnectionSelected(iC) == false)) {
+      auto* com = new undo::SwitchSelection(m_diagram);
+      com->recordSelections(shapes, cons);
+
+      m_diagram.addOperation(com);
+    }
 
     m_drag = pt;
 

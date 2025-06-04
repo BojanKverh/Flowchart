@@ -48,7 +48,8 @@ void DrawArea::paste(data::Diagram* copy)
   if (copy->shapes().size() == 0)
     return;
 
-  auto* com = new undo::Paste(&m_emitter, m_diagram, *copy);
+  QPointF pt = (copy->index() == m_diagram.index()) ? QPointF(50, 50) : QPointF(0, 0);
+  auto* com  = new undo::Paste(&m_emitter, m_diagram, *copy, pt);
   m_diagram.addOperation(com);
   update();
 }

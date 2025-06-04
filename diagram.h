@@ -30,6 +30,11 @@ public:
    */
   Diagram(const Diagram& diagram);
   /**
+   * @brief index Returns the diagram index
+   * @return Diagram index
+   */
+  int index() const { return m_index; }
+  /**
    * @brief clear Clears all the diagram data
    */
   void clear();
@@ -246,6 +251,9 @@ private:
   std::vector<Connection> m_vConnections;
 
   QUndoStack m_stack;
+  int m_index = -1;
+
+  static int s_index;
 };
 
 } // namespace data

@@ -17,11 +17,17 @@ void Paste::redo()
 {
   m_diagram.selectShape(-1);
   m_diagram.selectConnection(-1);
+  auto n   = m_diagram.shapes().size();
   auto err = m_diagram.copySelected(m_copy);
   if (err != data::Diagram::Error::eNone) {
     emit m_emitter->diagramError(err);
     setObsolete(true);
   } else {
+    auto& shapes = m_diagram.shapes();
+    qDebug() << "OFFSET" << m_ptOffset << n << shapes.size() << m_ptOffset;
+    for (size_t i = n; i < shapes.size(); ++i)
+      shapes[i]->move(shapes[i]->position() + m_ptOffset);
+
     recordSelections();
     SwitchSelection::redo();
   }

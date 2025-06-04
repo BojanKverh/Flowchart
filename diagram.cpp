@@ -10,6 +10,7 @@ namespace data {
 
 Diagram::Diagram() : m_name()
 {
+  m_index = s_index++;
 }
 
 Diagram::Diagram(const Diagram& diagram)
@@ -24,6 +25,8 @@ Diagram::Diagram(const Diagram& diagram)
     Connection copy(m_vShapes[out].get(), con.outIndex(), m_vShapes[in].get());
     addConnection(copy);
   }
+
+  m_index = diagram.m_index;
 }
 
 void Diagram::clear()
@@ -274,6 +277,8 @@ void Diagram::moveSelected(QPointF pt)
 
 Diagram::Error Diagram::copySelected(const Diagram& diagram)
 {
+  m_index = diagram.m_index;
+
   if ((hasStart() == true) && (diagram.hasStart() == true))
     return Diagram::Error::eStartExists;
   if ((hasEnd() == true) && (diagram.hasEnd() == true))
@@ -337,5 +342,7 @@ Diagram::deleteSelected()
 
   return std::make_tuple(std::move(deletedShapes), std::move(deletedCons));
 }
+
+int Diagram::s_index = 0;
 
 } // namespace data

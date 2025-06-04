@@ -21,12 +21,18 @@ public:
    * @param emitter Pointer to the error emitter object
    * @param diagram Reference to the diagram
    * @param copy Diagram to copy from
+   * @param ptOffset Offset by which the copied shapes will be moved
    */
-  Paste(data::ErrorEmitter* emitter, data::Diagram& diagram, data::Diagram& copy)
-    : SwitchSelection(diagram)
-    , m_emitter(emitter)
-    , m_diagram(diagram)
-    , m_copy(copy) {
+  Paste(data::ErrorEmitter* emitter,
+        data::Diagram& diagram,
+        data::Diagram& copy,
+        QPointF ptOffset = QPointF(0, 0))
+      : SwitchSelection(diagram)
+      , m_emitter(emitter)
+      , m_diagram(diagram)
+      , m_copy(copy)
+      , m_ptOffset(ptOffset)
+  {
     m_shapeIndex = m_diagram.shapes().size();
     m_conIndex   = m_diagram.connections().size();
   }
@@ -50,6 +56,7 @@ private:
   size_t m_shapeIndex;
   size_t m_conIndex;
   data::Diagram m_copy;
+  QPointF m_ptOffset;
 };
 
 } // namespace undo

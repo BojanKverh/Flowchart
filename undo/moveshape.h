@@ -17,11 +17,10 @@ public:
   /**
    * @brief MoveShape Constructor
    * @param diagram Reference to the diagram
-   * @param index Shape index
-   * @param oldPos Old shape position
+   * @param shapes Set of shape indices
    * @param diffPos Difference to the new position
    */
-  MoveShape(data::Diagram& diagram, int index, QPointF oldPos, QPointF diffPos);
+  MoveShape(data::Diagram& diagram, const std::unordered_set<int>& shapes, QPointF diffPos);
 
   /**
    * @brief id Returns the command id
@@ -51,7 +50,6 @@ public:
   bool mergeWith(const QUndoCommand* com) override;
 
 private:
-  QPointF m_oldPt;
   QPointF m_diffPt;
 };
 

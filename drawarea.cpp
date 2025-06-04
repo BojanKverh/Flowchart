@@ -325,11 +325,8 @@ bool DrawArea::initSelect(QPointF pt)
 void DrawArea::handleMove(QPointF pt)
 {
   auto set = m_diagram.selectedShapes();
-  for (auto it = set.begin(); it != set.end(); ++it) {
-    auto* com =
-      new undo::MoveShape(m_diagram, *it, m_diagram.shapes()[*it]->position(), pt - m_drag.value());
-    m_diagram.addOperation(com);
-  }
+  auto* com = new undo::MoveShape(m_diagram, set, pt - m_drag.value());
+  m_diagram.addOperation(com);
   update();
   m_drag = pt;
 }

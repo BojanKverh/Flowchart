@@ -1,29 +1,36 @@
 #include "moveshape.h"
 
+#include "../utils/setcompare.h"
+
 namespace undo {
 
-MoveShape::MoveShape(data::Diagram& diagram, int index, QPointF oldPos, QPointF diffPos)
-  : ManipulateShape(diagram, index)
-  , m_oldPt(oldPos)
-  , m_diffPt(diffPos)
+MoveShape::MoveShape(data::Diagram& diagram, const std::unordered_set<int>& shapes, QPointF diffPos)
+    : ManipulateShape(diagram, shapes)
+    , m_diffPt(diffPos)
 {}
 
 void MoveShape::undo()
 {
-  diagram().shapes().at(index())->move(m_oldPt);
+  for (auto index : shapes()) {
+    auto& shape = diagram().shapes().at(index);
+    shape->move(shape->position() - m_diffPt);
+  }
   updateConnections();
 }
 
 void MoveShape::redo()
 {
-  diagram().shapes().at(index())->move(m_oldPt + m_diffPt);
+  for (auto index : shapes()) {
+    auto& shape = diagram().shapes().at(index);
+    shape->move(shape->position() + m_diffPt);
+  }
   updateConnections();
 }
 
 bool MoveShape::mergeWith(const QUndoCommand* com)
 {
   const auto* moveCom = dynamic_cast<const MoveShape*>(com);
-  if ((moveCom == nullptr) || (index() != moveCom->index()))
+  if ((moveCom == nullptr) || (utils::SetCompare::equal(shapes(), moveCom->shapes()) == false))
     return false;
 
   m_diffPt += moveCom->diff();

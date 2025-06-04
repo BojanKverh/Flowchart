@@ -16,12 +16,12 @@ public:
   /**
    * @brief ManipulateShape Constructor
    * @param diagram Reference to the diagram
-   * @param index shape index
+   * @param shapes set of shape indices
    */
-  ManipulateShape(data::Diagram& diagram, int index)
-    : QUndoCommand()
-    , m_diagram(diagram)
-    , m_index(index)
+  ManipulateShape(data::Diagram& diagram, const std::unordered_set<int>& shapes)
+      : QUndoCommand()
+      , m_diagram(diagram)
+      , m_shapes(shapes)
   {}
 
   /**
@@ -30,10 +30,10 @@ public:
    */
   data::Diagram& diagram() const { return m_diagram; }
   /**
-   * @brief index Returns the index
-   * @return shape index
+   * @brief shapes Returns the index
+   * @return set of shape indices
    */
-  int index() const { return m_index; }
+  const std::unordered_set<int>& shapes() const { return m_shapes; }
 
 protected:
   /**
@@ -43,7 +43,7 @@ protected:
 
 private:
   data::Diagram& m_diagram;
-  int m_index;
+  std::unordered_set<int> m_shapes;
 };
 
 } // namespace undo
